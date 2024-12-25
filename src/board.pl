@@ -11,8 +11,8 @@ new_board([
     [white_king, white, white, white, empty, empty, empty, empty]
 ]).
 
-put_piece(Board, IRow-ICol, FCol-FRow, NewBoard) :-
-    get_board(Board, ICol-IRow, Piece),
-    set_board(Board, FCol-FRow, Piece, TempBoard),
-    set_board(TempBoard, ICol-IRow, empty, NewBoard).
+put_piece(Board, IRow-ICol, FRow-FCol, NewBoard) :-
+    get_board(Board, IRow-ICol, Piece),
+    set_board(Board, FRow-FCol, Piece, TempBoard),
+    set_board(TempBoard, IRow-ICol, empty, NewBoard).
 
