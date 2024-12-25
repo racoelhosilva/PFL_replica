@@ -1,3 +1,5 @@
+:- include(board).
+
 play.
 
 % initial_state(+GameConfig, -GameState)
