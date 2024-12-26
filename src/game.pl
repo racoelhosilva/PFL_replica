@@ -9,8 +9,9 @@ play :-
     get_state_board(State, Board),
     place_piece(Board, 1-1, 1-7, NewBoard),
     set_state_board(State, NewBoard, NewState),
-    execute_move(NewState, step(1-7, vertical), NewNewState),
-    execute_move(NewNewState, convert(5-7), NewNewNewState),
+    move(NewState, step(1-7, vertical), NewNewState),
+    display_game(NewNewState),
+    move(NewNewState, convert(5-7), NewNewNewState),
     display_game(NewNewNewState), !.
 
 % initial_state(+GameConfig, -GameState)
@@ -21,7 +22,7 @@ play :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(_GameConfig, state(Board, whites, false, false)) :- new_board(Board).
+initial_state(_GameConfig, state(Board, white, false, false)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -39,7 +40,9 @@ display_game(state(Board, Player, _, _)) :-
 % This predicate is responsible for move validation and
 % execution, receiving the current game state and the move to be executed, and (if the move is valid)
 % returns the new game state after the move is executed.
-move(_GameState, _Move, _NewGameState) :- throw('Not implemented').
+move(GameState, Move, NewGameState) :-
+    execute_move(GameState, Move, IntermediateGameState),
+    switch_player(IntermediateGameState, NewGameState).
 
 % valid_moves(+GameState, -ListOfMoves)
 % This predicate receives the current game state, and

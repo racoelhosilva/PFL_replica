@@ -19,5 +19,5 @@ display_board(Board) :-
     fail.
 display_board(_Board).
 
-display_player(whites) :- write('Whites\' turn: '), nl.
+display_player(white) :- write('Whites\' turn: '), nl.
 display_player(black) :- write('Blacks\' turn: '), nl.   % Changing color according to the pieces would be nice :)

@@ -32,6 +32,11 @@ place_piece(Board, IRow-ICol, FRow-FCol, NewBoard) :-
     set_board(Board, FRow-FCol, Piece, TempBoard),
     set_board(TempBoard, IRow-ICol, empty, NewBoard).
 
+% piece_at_is(+Board, +Position, -Color)
+piece_at_is(Board, Position, Color) :-
+    get_board(Board, Position, Piece),
+    piece_color(Piece, Color).
+
 % as_king(?NormalPiece, ?KingPiece).
 as_king(white_piece, white_king).
 as_king(black_piece, black_king).
