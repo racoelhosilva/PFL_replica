@@ -6,8 +6,11 @@
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
     initial_state('', State),
-    execute_move(State, step(2-4, diagonal), NewState),
-    display_game(NewState).
+    get_state_board(State, Board),
+    place_piece(Board, 1-1, 1-7, NewBoard),
+    set_state_board(State, NewBoard, NewState),
+    execute_move(NewState, step(1-7, vertical), NewNewState),
+    display_game(NewNewState).
 
 % initial_state(+GameConfig, -GameState)
 % This predicate receives a desired game configuration and
