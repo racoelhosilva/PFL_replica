@@ -7,12 +7,15 @@
 play :-
     initial_state('', State),
     get_state_board(State, Board),
-    place_piece(Board, 1-1, 1-7, NewBoard),
+    place_piece(Board, 1-1, 1-8, NewBoard),
     set_state_board(State, NewBoard, NewState),
-    move(NewState, step(1-7, vertical), NewNewState),
-    display_game(NewNewState),
-    move(NewNewState, convert(5-7), NewNewNewState),
-    display_game(NewNewNewState), !.
+    valid_move(NewState, 2-1, convert(2-1)),
+    valid_moves(NewState, ListOfMoves),
+    write(ListOfMoves), !.
+    % move(NewState, step(1-7, vertical), NewNewState),
+    % display_game(NewNewState),
+    % move(NewNewState, convert(5-7), NewNewNewState),
+    % display_game(NewNewNewState), !.
 
 % initial_state(+GameConfig, -GameState)
 % This predicate receives a desired game configuration and
@@ -47,7 +50,12 @@ move(GameState, Move, NewGameState) :-
 % valid_moves(+GameState, -ListOfMoves)
 % This predicate receives the current game state, and
 % returns a list of all possible valid moves.
-valid_moves(_GameState, _ListOfMoves) :- throw('Not implemented').
+valid_moves(GameState, ListOfMoves) :-
+    get_state_board(GameState, Board),
+    findall(Move, (
+        in_bounds(Board, Position),
+        valid_move(GameState, Position, Move)
+    ), ListOfMoves).
 
 % game_over(+GameState, -Winner)
 % This predicate receives the current game state, and verifies

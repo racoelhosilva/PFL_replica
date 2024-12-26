@@ -18,6 +18,11 @@ player_can_move_at(State, Position) :-
     get_state_player(State, Player),
     piece_at_is(Board, Position, Player).
 
+% direction(?Direction)
+direction(vertical).
+direction(horizontal).
+direction(diagonal).
+
 % execute_move(+State, +Move, -NewState)
 execute_move(State, step(Row-Col, Direction), NewState) :-
     player_can_move_at(State, Row-Col),
@@ -69,3 +74,19 @@ new_position(black, diagonal, Board, Row-Col, NewRow-NewCol) :-
     NextRow is Row - 1,
     NextCol is Col - 1,
     new_position(black, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
+
+valid_move(State, Position, step(Position, Direction)) :-
+    direction(Direction),
+    get_state_board(State, Board),
+    in_bounds(Board, Position),
+    player_can_move_at(State, Position),
+    get_state_player(State, Player),
+    new_position(Player, Direction, Board, Position, _NewPosition).
+
+valid_move(State, Position, convert(Position)) :-
+    get_state_board(State, Board),
+    in_bounds(Board, Position),
+    player_can_move_at(State, Position),
+    get_board(Board, Position, Piece),
+    \+ is_king(Piece).
+    
