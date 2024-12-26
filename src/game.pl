@@ -4,7 +4,9 @@
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
-play.
+play :-
+    initial_state(0, State),
+    display_game(State).
 
 % initial_state(+GameConfig, -GameState)
 % This predicate receives a desired game configuration and
@@ -14,7 +16,7 @@ play.
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(_GameConfig, state(Board, false, false)) :- new_board(Board).
+initial_state(_GameConfig, state(Board, 1, false, false)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -23,7 +25,7 @@ initial_state(_GameConfig, state(Board, false, false)) :- new_board(Board).
 % visualizations will be valued. Flexible game state representations and visualization predicates will
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
-display_game(_GameState) :- throw('Not implemented').
+display_game(state(Board, _, _, _)) :- display_board(Board).
 
 % move(+GameState, +Move, -NewGameState)
 % This predicate is responsible for move validation and

@@ -1,4 +1,4 @@
-% State -> state(Board, WhiteKingEaten, BlackKingEaten)
+% State -> state(Board, CurrentPlayer, WhiteKingEaten, BlackKingEaten)
 % Add more variables when more game modes are implemented
 
 
