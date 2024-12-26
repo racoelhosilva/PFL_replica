@@ -19,6 +19,10 @@ execute_move(State, step(Row-Col, Direction), NewState) :-
     place_piece(Board, Row-Col, NewRow-NewCol, NewBoard),
     set_state_board(State, NewBoard, NewState).
 
+execute_move(State, convert(Row-Col), NewState) :-
+    get_state_board(State, Board),
+    convert_to_king(Board, Row-Col, NewBoard),
+    set_state_board(State, NewBoard, NewState).
 
 % new_position(+Color, +Direction, +Board, +PiecePosition, +NewPosition)
 % TODO: Maybe optimize this

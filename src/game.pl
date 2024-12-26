@@ -10,7 +10,8 @@ play :-
     place_piece(Board, 1-1, 1-7, NewBoard),
     set_state_board(State, NewBoard, NewState),
     execute_move(NewState, step(1-7, vertical), NewNewState),
-    display_game(NewNewState).
+    execute_move(NewNewState, convert(5-7), NewNewNewState),
+    display_game(NewNewNewState), !.
 
 % initial_state(+GameConfig, -GameState)
 % This predicate receives a desired game configuration and

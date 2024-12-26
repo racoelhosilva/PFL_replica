@@ -31,3 +31,13 @@ place_piece(Board, IRow-ICol, FRow-FCol, NewBoard) :-
     get_board(Board, IRow-ICol, Piece),
     set_board(Board, FRow-FCol, Piece, TempBoard),
     set_board(TempBoard, IRow-ICol, empty, NewBoard).
+
+% as_king(?NormalPiece, ?KingPiece).
+as_king(white_piece, white_king).
+as_king(black_piece, black_king).
+
+% convert_to_king(+Board, +Position, -NewBoard)
+convert_to_king(Board, Row-Col, NewBoard) :-
+    get_board(Board, Row-Col, Piece),
+    as_king(Piece, KingPiece),
+    set_board(Board, Row-Col, KingPiece, NewBoard).
