@@ -1,9 +1,9 @@
 :- use_module(library(lists)).
 
 display_cell(empty) :- write(.).
-display_cell(white) :- write(w).
+display_cell(white_piece) :- write(w).
 display_cell(white_king) :- write(+).
-display_cell(black) :- write(b).
+display_cell(black_piece) :- write(b).
 display_cell(black_king) :- write(*).
 
 display_line(Line) :- 
@@ -17,6 +17,7 @@ display_board(Board) :-
     member(Line, RevBoard),
     display_line(Line),
     fail.
-display_board(_Board) :- nl.
+display_board(_Board).
 
-
+display_player(whites) :- write('Whites\' turn: '), nl.
+display_player(black) :- write('Blacks\' turn: '), nl.   % Changing color according to the pieces would be nice :)
