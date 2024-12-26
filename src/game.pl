@@ -14,7 +14,8 @@ play.
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(_GameConfig, _GameState) :- throw('Not implemented').
+initial_state(_GameConfig, state(Board, false, false)) :- new_board(Board).
+
 
 % display_game(+GameState)
 % This predicate receives the current game state (including the player
