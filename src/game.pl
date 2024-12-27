@@ -1,24 +1,24 @@
+:- use_module(library(random)).
+:- use_module(library(system)).
+
 :- include(display).
 :- include(logic).
+
+% TODO: Remove this
+cycle(State) :-
+    choose_move(State, 2, Move),
+    move(State, Move, IntState),
+    display_game(IntState),
+    value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,
+    ((game_over(IntState, Winner), write(Winner)), ! ; sleep(1), cycle(IntState)).
 
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
     initial_state('', State),
-    get_state_board(State, Board),
-    place_piece(Board, 1-1, 7-7, NewBoard),
-    place_piece(NewBoard, 8-8, 7-8, NewBoard2),
-    set_state_board(State, NewBoard2, NewState),
-    \+ game_over(NewState, _),
-    move(NewState, step(7-7, vertical), NewState2),
-    game_over(NewState2, _),
-    valid_moves(NewState2, ListOfMoves),
-    write(ListOfMoves), !.
-    % move(NewState, step(1-7, vertical), NewNewState),
-    % display_game(NewNewState),
-    % move(NewNewState, convert(5-7), NewNewNewState),
-    % display_game(NewNewNewState), !.
+    display_game(State),
+    cycle(State), !.
 
 % initial_state(+GameConfig, -GameState)
 % This predicate receives a desired game configuration and
@@ -60,12 +60,13 @@ valid_moves(GameState, ListOfMoves) :-
 % This predicate receives the current game state, and verifies
 % whether the game is over, in which case it also identifies the winner (or draw). Note that this
 % predicate should not print anything to the terminal.
-game_over(state(_, _, WhiteKingEaten, _), white) :- WhiteKingEaten = true.
+game_over(State, Winner) :-
+    opposite_color(Winner, OppositeColor),
+    king_eaten(OppositeColor, State).
 game_over(State, white) :-
     get_state_board(State, Board),
     get_board(Board, 8-8, Piece),
     piece_color(Piece, white).
-game_over(state(_, _, _, BlackKingEaten), black) :- BlackKingEaten = true.
 game_over(State, black) :-
     get_state_board(State, Board),
     get_board(Board, 1-1, Piece),
@@ -76,7 +77,10 @@ game_over(State, black) :-
 % value measuring how good/bad the current game state is to the given Player.
 value(GameState, Player, Value) :-
     get_state_board(GameState, Board),
-    evaluate_board(Player, Board, Value).
+    count_board(Player, Board, SameCount),
+    opposite_color(Player, OppositeColor),
+    count_board(OppositeColor, Board, OppositeCount),
+    Value is SameCount - OppositeCount.
 
 % choose_move(+GameState, +Level, -Move)
 % This predicate receives the current game state and
@@ -84,4 +88,16 @@ value(GameState, Player, Value) :-
 % 2 should return the best play at the time (using a greedy algorithm), considering the evaluation of
 % the game state as determined by the value/3 predicate. For human players, it should interact with
 % the user to read the move.
-choose_move(_GameState, _Level, _Move) :- throw('Not implemented').
+choose_move(GameState, 1, Move) :-  % Choose random move
+    valid_moves(GameState, ListOfMoves),
+    random_member(Move, ListOfMoves).
+choose_move(GameState, 2, Move) :-  % Choose best (greedy) move
+    valid_moves(GameState, ListOfMoves),
+    get_state_player(GameState, Player),
+    findall(Value-PossibleMove, (
+        member(PossibleMove, ListOfMoves),
+        move(GameState, PossibleMove, PossibleState),
+        value(PossibleState, Player, Value)
+    ), ValueMoves),
+    get_max_key(ValueMoves, _-Move).
+    

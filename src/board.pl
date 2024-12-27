@@ -19,6 +19,10 @@ piece_color(black_piece, black).
 piece_color(black_king, black).
 piece_color(empty, none).
 
+% opposite_color(?Color, ?OppositeColor)
+opposite_color(white, black).
+opposite_color(black, white).
+
 % is_king(?Piece)
 is_king(white_king).
 is_king(black_king).

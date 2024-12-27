@@ -12,3 +12,14 @@ set_board(Board, Row-Col, Value, NewBoard) :-
     nth1(Col, Board, Line, BoardRest),
     set_line(Line, Row, Value, NewLine),
     nth1(Col, NewBoard, NewLine, BoardRest).
+
+% get_max_key(+EntryList, ?MaxEntry)
+get_max_key([FirstEntry | ListTail], MaxEntry) :- get_max_key(ListTail, FirstEntry, MaxEntry).
+
+% get_max_key(+EntryList, +Accumulator, ?MaxEntry)
+get_max_key([], Accumulator, Accumulator).
+get_max_key([Key-Value | ListTail], CurrKey-_, MaxEntry) :-
+    Key > CurrKey, !,
+    get_max_key(ListTail, Key-Value, MaxEntry).
+get_max_key([_ | ListTail], CurrEntry, MaxEntry) :-
+    get_max_key(ListTail, CurrEntry, MaxEntry).

@@ -103,16 +103,14 @@ valid_move(State, convert(Position)) :-
     get_board(Board, Position, Piece),
     \+ is_king(Piece).
 
-% evaluate_board(+Board, ?Value)
-evaluate_board(Color, Board, Value) :-
-    get_state_board(State, Board),
-    maplist(evaluate_line(Color), Board, LineValues),
+% count_board(+Board, ?Value)
+count_board(Color, Board, Value) :-
+    maplist(count_line(Color), Board, LineValues),
     sumlist(LineValues, Value).
 
-% evaluate_line(+Line, ?Value)
-evaluate_line(Color, Line, Value) :-
+% count_line(+Line, ?Value)
+count_line(Color, Line, Value) :-
     maplist(piece_color, Line, ColorLine),
     include(=(Color), ColorLine, FilteredLine),
     length(FilteredLine, Value).
-
     
