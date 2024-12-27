@@ -7,10 +7,14 @@
 play :-
     initial_state('', State),
     get_state_board(State, Board),
-    place_piece(Board, 1-1, 1-8, NewBoard),
-    set_state_board(State, NewBoard, NewState),
-    valid_move(NewState, 2-1, convert(2-1)),
-    valid_moves(NewState, ListOfMoves),
+    place_piece(Board, 1-1, 7-7, NewBoard),
+    place_piece(NewBoard, 8-8, 7-8, NewBoard2),
+    set_state_board(State, NewBoard2, NewState),
+    \+ game_over(NewState, _),
+    move(NewState, step(7-7, vertical), NewState2),
+    game_over(NewState2, _),
+    write(NewState), nl, write(NewState2), nl,
+    valid_moves(NewState2, ListOfMoves),
     write(ListOfMoves), !.
     % move(NewState, step(1-7, vertical), NewNewState),
     % display_game(NewNewState),
@@ -61,7 +65,16 @@ valid_moves(GameState, ListOfMoves) :-
 % This predicate receives the current game state, and verifies
 % whether the game is over, in which case it also identifies the winner (or draw). Note that this
 % predicate should not print anything to the terminal.
-game_over(_GameState, _Winner) :- throw('Not implemented').
+game_over(state(_, _, WhiteKingEaten, _), white) :- WhiteKingEaten = true.
+game_over(State, white) :-
+    get_state_board(State, Board),
+    get_board(Board, 8-8, Piece),
+    piece_color(Piece, white).
+game_over(state(_, _, _, BlackKingEaten), black) :- BlackKingEaten = true.
+game_over(State, black) :-
+    get_state_board(State, Board),
+    get_board(Board, 1-1, Piece),
+    piece_color(Piece, black).
 
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a

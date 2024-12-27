@@ -12,6 +12,14 @@ get_state_player(state(_, Player, _, _), Player).
 % set_state_player(+State, +Player, -NewState)
 set_state_player(state(Board, _, WhiteKingEaten, BlackKingEaten), NewPlayer, state(Board, NewPlayer, WhiteKingEaten, BlackKingEaten)).
 
+% king_eaten(+Color, +State)
+king_eaten(white, state(_, _, true, _)).
+king_eaten(black, state(_, _, _, true)).
+
+% set_king_eaten(+Color, +State, -NewState)
+set_king_eaten(white, state(Board, Player, _, BlackKingEaten), state(Board, Player, true, BlackKingEaten)).
+set_king_eaten(black, state(Board, Player, WhiteKingEaten, _), state(Board, Player, WhiteKingEaten, true)).
+
 % player_can_move_at(+State, +Position)
 player_can_move_at(State, Position) :-
     get_state_board(State, Board),
@@ -23,14 +31,22 @@ direction(vertical).
 direction(horizontal).
 direction(diagonal).
 
+% verify_and_set_king_eaten(+Piece, +State, -NewState)
+verify_and_set_king_eaten(Piece, State, State) :- \+ is_king(Piece), !.
+verify_and_set_king_eaten(Piece, State, NewState) :-
+    piece_color(Piece, Color),
+    set_king_eaten(Color, State, NewState).
+
 % execute_move(+State, +Move, -NewState)
 execute_move(State, step(Row-Col, Direction), NewState) :-
     player_can_move_at(State, Row-Col),
     get_state_board(State, Board),
     get_state_player(State, Player),
     new_position(Player, Direction, Board, Row-Col, NewRow-NewCol),
+    get_board(Board, NewRow-NewCol, ReplacedPiece),
     place_piece(Board, Row-Col, NewRow-NewCol, NewBoard),
-    set_state_board(State, NewBoard, NewState).
+    set_state_board(State, NewBoard, IntState),
+    verify_and_set_king_eaten(ReplacedPiece, IntState, NewState).
 
 execute_move(State, convert(Row-Col), NewState) :-
     player_can_move_at(State, Row-Col),
