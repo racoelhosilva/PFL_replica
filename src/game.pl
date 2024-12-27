@@ -18,7 +18,7 @@ game_loop(State) :-
     write(Winner).
 
 game_loop(State) :-
-    choose_move(State, 1, Move),
+    choose_move(State, 2, Move),
     move(State, Move, IntState),
     display_game(IntState),
     value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,

@@ -45,7 +45,7 @@ execute_move(State, step(Row-Col, Direction), NewState) :-
     set_state_board(State, NewBoard, IntState),
     verify_and_set_king_eaten(ReplacedPiece, IntState, NewState).
 
-execute_move(State, convert(Row-Col), NewState) :-
+execute_move(State, transform(Row-Col), NewState) :-
     player_can_move_at(State, Row-Col),
     get_state_board(State, Board),
     convert_to_king(Board, Row-Col, NewBoard),
@@ -88,6 +88,43 @@ new_position(black, diagonal, Board, Row-Col, NewRow-NewCol) :-
     NextCol is Col - 1,
     new_position(black, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
 
+% blocks_sight(?Color, ?Piece)
+blocks_sight(Color, Piece) :-
+    opposite_color(Color, OppositeColor),
+    piece_color(Piece, OppositeColor).
+
+% seen_by_king(?Color, ?Direction, +Board, +Position)
+seen_by_king(_Color, _Direction, Board, Row-Col) :- \+ in_bounds(Board, Row-Col), !, fail.
+
+seen_by_king(Color, _Direction, Board, Row-Col) :- 
+    get_board(Board, Row-Col, Piece),
+    blocks_sight(Color, Piece), !, fail.
+seen_by_king(_Color, _Direction, Board, Row-Col) :- 
+    get_board(Board, Row-Col, Piece),
+    is_king(Piece), !.
+
+seen_by_king(white, vertical, Board, Row-Col) :-
+    NextRow is Row - 1,
+    seen_by_king(white, vertical, Board, NextRow-Col).
+seen_by_king(white, horizontal, Board, Row-Col) :-
+    NextCol is Col - 1,
+    seen_by_king(white, horizontal, Board, Row-NextCol).
+seen_by_king(white, diagonal, Board, Row-Col) :-
+    NextRow is Row - 1,
+    NextCol is Col - 1,
+    seen_by_king(white, diagonal, Board, NextRow-NextCol).
+
+seen_by_king(black, vertical, Board, Row-Col) :-
+    NextRow is Row + 1,
+    seen_by_king(black, vertical, Board, NextRow-Col).
+seen_by_king(black, horizontal, Board, Row-Col) :-
+    NextCol is Col + 1,
+    seen_by_king(black, horizontal, Board, Row-NextCol).
+seen_by_king(black, diagonal, Board, Row-Col) :-
+    NextRow is Row + 1,
+    NextCol is Col + 1,
+    seen_by_king(black, diagonal, Board, NextRow-NextCol).
+
 % valid_move(+State, ?Move)
 valid_move(State, step(Position, Direction)) :-
     get_state_board(State, Board),
@@ -96,12 +133,14 @@ valid_move(State, step(Position, Direction)) :-
     get_state_player(State, Player),
     new_position(Player, Direction, Board, Position, _NewPosition).
 
-valid_move(State, convert(Position)) :-
+valid_move(State, transform(Position)) :-
     get_state_board(State, Board),
     in_bounds(Board, Position),
     player_can_move_at(State, Position),
     get_board(Board, Position, Piece),
-    \+ is_king(Piece).
+    \+ is_king(Piece),
+    get_state_player(State, Player),
+    seen_by_king(Player, _, Board, Position).
 
 % evaluate_piece(+Color, +Piece, +Position, ?Value)
 evaluate_piece(_Color, empty, _Position, 0) :- !.
