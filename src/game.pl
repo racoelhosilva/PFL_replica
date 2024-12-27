@@ -4,21 +4,26 @@
 :- include(display).
 :- include(logic).
 
-% TODO: Remove this
-cycle(State) :-
-    choose_move(State, 2, Move),
-    move(State, Move, IntState),
-    display_game(IntState),
-    value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,
-    ((game_over(IntState, Winner), write(Winner)), ! ; sleep(1), cycle(IntState)).
-
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
     initial_state('', State),
     display_game(State),
-    cycle(State), !.
+    game_loop(State), !.
+
+% game_loop(State)
+game_loop(State) :-
+    game_over(State, Winner), !,
+    write(Winner).
+
+game_loop(State) :-
+    choose_move(State, 1, Move),
+    move(State, Move, IntState),
+    display_game(IntState),
+    value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,
+    sleep(1),
+    game_loop(IntState).
 
 % initial_state(+GameConfig, -GameState)
 % This predicate receives a desired game configuration and
