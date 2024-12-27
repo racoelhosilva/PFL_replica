@@ -19,8 +19,8 @@ king_eaten(white, state(_, _, true, _)).
 king_eaten(black, state(_, _, _, true)).
 
 % set_king_eaten(+Color, +State, -NewState)
-set_king_eaten(white, state(Board, Player, _, BlackKingEaten), state(Board, Player, true, BlackKingEaten)).
-set_king_eaten(black, state(Board, Player, WhiteKingEaten, _), state(Board, Player, WhiteKingEaten, true)).
+set_king_eaten(white, state(Board, Player, _, BlackKingEaten), WhiteKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten)).
+set_king_eaten(black, state(Board, Player, WhiteKingEaten, _), BlackKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten)).
 
 % player_can_move_at(+State, +Position)
 player_can_move_at(State, Position) :-
@@ -32,7 +32,7 @@ player_can_move_at(State, Position) :-
 verify_and_set_king_eaten(Piece, State, State) :- \+ is_king(Piece), !.
 verify_and_set_king_eaten(Piece, State, NewState) :-
     piece_color(Piece, Color),
-    set_king_eaten(Color, State, NewState).
+    set_king_eaten(Color, State, true, NewState).
 
 % execute_move(+State, +Move, -NewState)
 execute_move(State, step(Row-Col, Direction), NewState) :-
@@ -103,14 +103,53 @@ valid_move(State, convert(Position)) :-
     get_board(Board, Position, Piece),
     \+ is_king(Piece).
 
-% count_board(+Board, ?Value)
-count_board(Color, Board, Value) :-
-    maplist(count_line(Color), Board, LineValues),
-    sumlist(LineValues, Value).
+% evaluate_piece(+Color, +Piece, +Position, ?Value)
+evaluate_piece(_Color, empty, _Position, 0) :- !.
 
-% count_line(+Line, ?Value)
-count_line(Color, Line, Value) :-
-    maplist(piece_color, Line, ColorLine),
-    include(=(Color), ColorLine, FilteredLine),
-    length(FilteredLine, Value).
+evaluate_piece(white, Piece, Row-Col, Value) :-
+    piece_color(Piece, white), !,
+    Value is 1 + 25 / ((8 - Row) + (8 - Col) + 1).
+
+evaluate_piece(black, Piece, Row-Col, Value) :-
+    piece_color(Piece, black), !,
+    Value is 1 + 25 / ((Row - 1) + (Col - 1) + 1).
+
+evaluate_piece(Color, Piece, Row-Col, Value) :-
+    opposite_color(Color, OppositeColor),
+    evaluate_piece(OppositeColor, Piece, Row-Col, OppositeValue),
+    Value is -OppositeValue.
+
+% evaluate_line(+Color, +Line, +Row, ?Value)
+evaluate_line(Color, Line, Row, Value) :- evaluate_line(Color, Line, Row, 1, 0, Value).
+
+% evaluate_line(+Color, +Line, +Row, +Col, +Accumulator, ?Value)
+evaluate_line(_Color, [], _Row, _Col, Acc, Acc).
+evaluate_line(Color, [Piece | LineTail], Row, Col, Acc, Value) :-
+    evaluate_piece(Color, Piece, Row-Col, PieceValue),
+    NewCol is Col + 1,
+    NewAcc is Acc + PieceValue,
+    evaluate_line(Color, LineTail, Row, NewCol, NewAcc, Value).
+
+% evaluate_board(+Color, +Board, ?Value)
+evaluate_board(Color, Board, Value) :- evaluate_board(Color, Board, 1, 0, Value).
+
+% evaluate_board(+Color, +Board, +Row, +Accumulator, ?Value)
+evaluate_board(_Color, [], _Row, Acc, Acc).
+evaluate_board(Color, [Line | BoardTail], Row, Acc, Value) :-
+    evaluate_line(Color, Line, Row, LineValue),
+    NewRow is Row + 1,
+    NewAcc is Acc + LineValue,
+    evaluate_board(Color, BoardTail, NewRow, NewAcc, Value).
+
+% evaluate_state(+Color, +State, ?Value)
+evaluate_state(Color, State, Value) :-
+    opposite_color(Color, OppositeColor),
+    king_eaten(OppositeColor, State), !,
+    set_king_eaten(OppositeColor, State, false, NewState),
+    evaluate_state(Color, NewState, SubValue),
+    Value is SubValue + 12.
+
+evaluate_state(Color, State, Value) :-
+    get_state_board(State, Board),
+    evaluate_board(Color, Board, Value).
     

@@ -75,12 +75,7 @@ game_over(State, black) :-
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a
 % value measuring how good/bad the current game state is to the given Player.
-value(GameState, Player, Value) :-
-    get_state_board(GameState, Board),
-    count_board(Player, Board, SameCount),
-    opposite_color(Player, OppositeColor),
-    count_board(OppositeColor, Board, OppositeCount),
-    Value is SameCount - OppositeCount.
+value(GameState, Player, Value) :- evaluate_state(Player, GameState, Value).
 
 % choose_move(+GameState, +Level, -Move)
 % This predicate receives the current game state and
