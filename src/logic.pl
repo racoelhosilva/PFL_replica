@@ -1,3 +1,5 @@
+:- use_module(library(aggregate)).
+
 :- include(board).
 
 % get_state_board(+State, -Board)
@@ -86,6 +88,7 @@ new_position(black, diagonal, Board, Row-Col, NewRow-NewCol) :-
     NextCol is Col - 1,
     new_position(black, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
 
+% valid_move(+State, ?Move)
 valid_move(State, step(Position, Direction)) :-
     get_state_board(State, Board),
     in_bounds(Board, Position),
@@ -99,4 +102,17 @@ valid_move(State, convert(Position)) :-
     player_can_move_at(State, Position),
     get_board(Board, Position, Piece),
     \+ is_king(Piece).
+
+% evaluate_board(+Board, ?Value)
+evaluate_board(Color, Board, Value) :-
+    get_state_board(State, Board),
+    maplist(evaluate_line(Color), Board, LineValues),
+    sumlist(LineValues, Value).
+
+% evaluate_line(+Line, ?Value)
+evaluate_line(Color, Line, Value) :-
+    maplist(piece_color, Line, ColorLine),
+    include(=(Color), ColorLine, FilteredLine),
+    length(FilteredLine, Value).
+
     

@@ -74,7 +74,9 @@ game_over(State, black) :-
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a
 % value measuring how good/bad the current game state is to the given Player.
-value(_GameState, _Player) :- throw('Not implemented').
+value(GameState, Player, Value) :-
+    get_state_board(GameState, Board),
+    evaluate_board(Player, Board, Value).
 
 % choose_move(+GameState, +Level, -Move)
 % This predicate receives the current game state and
