@@ -26,11 +26,6 @@ player_can_move_at(State, Position) :-
     get_state_player(State, Player),
     piece_at_is(Board, Position, Player).
 
-% direction(?Direction)
-direction(vertical).
-direction(horizontal).
-direction(diagonal).
-
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
 verify_and_set_king_eaten(Piece, State, State) :- \+ is_king(Piece), !.
 verify_and_set_king_eaten(Piece, State, NewState) :-
@@ -91,15 +86,14 @@ new_position(black, diagonal, Board, Row-Col, NewRow-NewCol) :-
     NextCol is Col - 1,
     new_position(black, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
 
-valid_move(State, Position, step(Position, Direction)) :-
-    direction(Direction),
+valid_move(State, step(Position, Direction)) :-
     get_state_board(State, Board),
     in_bounds(Board, Position),
     player_can_move_at(State, Position),
     get_state_player(State, Player),
     new_position(Player, Direction, Board, Position, _NewPosition).
 
-valid_move(State, Position, convert(Position)) :-
+valid_move(State, convert(Position)) :-
     get_state_board(State, Board),
     in_bounds(Board, Position),
     player_can_move_at(State, Position),

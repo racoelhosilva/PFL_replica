@@ -13,7 +13,6 @@ play :-
     \+ game_over(NewState, _),
     move(NewState, step(7-7, vertical), NewState2),
     game_over(NewState2, _),
-    write(NewState), nl, write(NewState2), nl,
     valid_moves(NewState2, ListOfMoves),
     write(ListOfMoves), !.
     % move(NewState, step(1-7, vertical), NewNewState),
@@ -55,11 +54,7 @@ move(GameState, Move, NewGameState) :-
 % This predicate receives the current game state, and
 % returns a list of all possible valid moves.
 valid_moves(GameState, ListOfMoves) :-
-    get_state_board(GameState, Board),
-    findall(Move, (
-        in_bounds(Board, Position),
-        valid_move(GameState, Position, Move)
-    ), ListOfMoves).
+    findall(Move, valid_move(GameState, Move), ListOfMoves).
 
 % game_over(+GameState, -Winner)
 % This predicate receives the current game state, and verifies
