@@ -106,13 +106,15 @@ valid_move(State, convert(Position)) :-
 % evaluate_piece(+Color, +Piece, +Position, ?Value)
 evaluate_piece(_Color, empty, _Position, 0) :- !.
 
+evaluate_piece(white, white-king, 8-8, 15) :- !.
+evaluate_piece(black, black_king, 1-1, 15) :- !.
+
 evaluate_piece(white, Piece, Row-Col, Value) :-
     piece_color(Piece, white), !,
-    Value is 1 + 25 / ((8 - Row) + (8 - Col) + 1).
-
+    Value is 2 + 3 / ((8 - Row) + (8 - Col) + 1).
 evaluate_piece(black, Piece, Row-Col, Value) :-
     piece_color(Piece, black), !,
-    Value is 1 + 25 / ((Row - 1) + (Col - 1) + 1).
+    Value is 2 + 3 / ((Row - 1) + (Col - 1) + 1).
 
 evaluate_piece(Color, Piece, Row-Col, Value) :-
     opposite_color(Color, OppositeColor),
@@ -147,9 +149,24 @@ evaluate_state(Color, State, Value) :-
     king_eaten(OppositeColor, State), !,
     set_king_eaten(OppositeColor, State, false, NewState),
     evaluate_state(Color, NewState, SubValue),
-    Value is SubValue + 12.
+    Value is SubValue + 5.
+
+evaluate_state(Color, State, Value) :-
+    king_eaten(Color, State), !,
+    set_king_eaten(Color, State, false, NewState),
+    evaluate_state(Color, NewState, SubValue),
+    Value is SubValue - 5.
 
 evaluate_state(Color, State, Value) :-
     get_state_board(State, Board),
     evaluate_board(Color, Board, Value).
+
+% evaluate_move(+State, +Move, ?EvaluatedMove)
+evaluate_move(State, Move, Value-Move) :-
+    get_state_player(State, Player),
+    execute_move(State, Move, PossibleState),
+    evaluate_state(Player, PossibleState, Value).
     
+% evaluate_moves(+State, +Moves, ?EvaluatedMoves)
+evaluate_moves(State, Moves, EvaluatedMoves) :-
+    maplist(evaluate_move(State), Moves, EvaluatedMoves).

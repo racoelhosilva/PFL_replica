@@ -61,17 +61,14 @@ valid_moves(GameState, ListOfMoves) :-
 % whether the game is over, in which case it also identifies the winner (or draw). Note that this
 % predicate should not print anything to the terminal.
 game_over(State, Winner) :-
-    opposite_color(Winner, OppositeColor),
-    king_eaten(OppositeColor, State).
+    king_eaten(OppositeColor, State),
+    opposite_color(OppositeColor, Winner).
 game_over(State, white) :-
     get_state_board(State, Board),
-    get_board(Board, 8-8, Piece),
-    piece_color(Piece, white).
+    get_board(Board, 8-8, white_king).
 game_over(State, black) :-
     get_state_board(State, Board),
-    get_board(Board, 1-1, Piece),
-    piece_color(Piece, black).
-
+    get_board(Board, 1-1, black_king).
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a
 % value measuring how good/bad the current game state is to the given Player.
@@ -84,15 +81,10 @@ value(GameState, Player, Value) :- evaluate_state(Player, GameState, Value).
 % the game state as determined by the value/3 predicate. For human players, it should interact with
 % the user to read the move.
 choose_move(GameState, 1, Move) :-  % Choose random move
-    valid_moves(GameState, ListOfMoves),
-    random_member(Move, ListOfMoves).
+    valid_moves(GameState, Moves),
+    random_member(Move, Moves).
 choose_move(GameState, 2, Move) :-  % Choose best (greedy) move
-    valid_moves(GameState, ListOfMoves),
-    get_state_player(GameState, Player),
-    findall(Value-PossibleMove, (
-        member(PossibleMove, ListOfMoves),
-        move(GameState, PossibleMove, PossibleState),
-        value(PossibleState, Player, Value)
-    ), ValueMoves),
-    get_max_key(ValueMoves, _-Move).
+    valid_moves(GameState, Moves),
+    evaluate_moves(GameState, Moves, EvaluatedMoves),
+    get_max_key(EvaluatedMoves, _-Move).
     
