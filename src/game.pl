@@ -69,11 +69,11 @@ game_over(State, Winner) :-
     king_eaten(OppositeColor, State),
     opposite_color(OppositeColor, Winner).
 game_over(State, white) :-
-    get_state_board(State, Board),
-    get_board(Board, 8-8, white_king).
+    get_state_board(State, board(Board, Size)),
+    get_piece(Board, Size-Size, white_king).
 game_over(State, black) :-
-    get_state_board(State, Board),
-    get_board(Board, 1-1, black_king).
+    get_state_piece(State, 1-1, black_king).
+
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a
 % value measuring how good/bad the current game state is to the given Player.
