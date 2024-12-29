@@ -30,7 +30,7 @@ verify_and_set_king_eaten(Piece, State, NewState) :-
 execute_move(State, step(Pos, Direction), NewState) :-
     state_board(State, Board),
     state_player(State, Player),
-    new_position(Player, Direction, Board, Pos, NewPos),
+    new_position(Player, Direction, Pos, Board, NewPos),
     board_piece(Board, NewPos, ReplacedPiece),
     place_piece(Board, Pos, NewPos, NewBoard),
     set_state_board(State, NewBoard, TempState),
@@ -47,33 +47,33 @@ switch_player(State, NewState) :-
     opposite_color(Player, OtherPlayer),
     set_state_player(State, OtherPlayer, NewState).
 
-% new_position(+Color, +Direction, +Board, +PiecePosition, +NewPosition)
-new_position(_, _, Board, Position, _) :- \+ in_bounds(Board, Position), !, fail.
-new_position(Color, _, Board, Position, Position) :-
+% new_position(+Color, +Direction, +PiecePosition, +Board, -NewPosition)
+new_position(_, _, Position, Board, _) :- \+ in_bounds(Board, Position), !, fail.
+new_position(Color, _, Position, Board, Position) :-
     board_piece_color(Board, Position, OtherColor),
     OtherColor \= Color, !.
 
-new_position(white, vertical, Board, Row-Col, Row-NewCol) :-
+new_position(white, vertical, Row-Col, Board, Row-NewCol) :-
     NextCol is Col + 1,
-    new_position(white, vertical, Board, Row-NextCol, Row-NewCol).
-new_position(white, horizontal, Board, Row-Col, NewRow-Col) :-
+    new_position(white, vertical, Row-NextCol, Board, Row-NewCol).
+new_position(white, horizontal, Row-Col, Board, NewRow-Col) :-
     NextRow is Row + 1,
-    new_position(white, horizontal, Board, NextRow-Col, NewRow-Col).
-new_position(white, diagonal, Board, Row-Col, NewRow-NewCol) :-
+    new_position(white, horizontal, NextRow-Col, Board, NewRow-Col).
+new_position(white, diagonal, Row-Col, Board, NewRow-NewCol) :-
     NextRow is Row + 1,
     NextCol is Col + 1,
-    new_position(white, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
+    new_position(white, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
 
-new_position(black, vertical, Board, Row-Col, Row-NewCol) :-
+new_position(black, vertical, Row-Col, Board, Row-NewCol) :-
     NextCol is Col - 1,
-    new_position(black, vertical, Board, Row-NextCol, Row-NewCol).
-new_position(black, horizontal, Board, Row-Col, NewRow-Col) :-
+    new_position(black, vertical, Row-NextCol, Board, Row-NewCol).
+new_position(black, horizontal, Row-Col, Board, NewRow-Col) :-
     NextRow is Row - 1,
-    new_position(black, horizontal, Board, NextRow-Col, NewRow-Col).
-new_position(black, diagonal, Board, Row-Col, NewRow-NewCol) :-
+    new_position(black, horizontal, NextRow-Col, Board, NewRow-Col).
+new_position(black, diagonal, Row-Col, Board, NewRow-NewCol) :-
     NextRow is Row - 1,
     NextCol is Col - 1,
-    new_position(black, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
+    new_position(black, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
 
 % player_can_move_at(+Player, +Board, +Position)
 player_can_move_at(Player, Position, Board) :-
@@ -122,7 +122,7 @@ valid_move(State, step(Position, Direction)) :-
     state_board(State, Board),
     state_player(State, Player),
     player_can_move_at(Player, Position, Board),
-    new_position(Player, Direction, Board, Position, _NewPosition).
+    new_position(Player, Direction, Position, Board, _NewPosition).
 
 valid_move(State, transform(Position)) :-
     state_board(State, Board),
