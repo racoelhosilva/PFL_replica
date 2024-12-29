@@ -3,24 +3,28 @@
 :- include(board).
 
 % get_state_board(+State, -Board)
-get_state_board(state(Board, _, _, _), Board).
+get_state_board(state(Board, _, _, _, _), Board).
 
 % set_state_board(+State, +NewBoard, -NewState)
-set_state_board(state(_, Player, WhiteKingEaten, BlackKingEaten), NewBoard, state(NewBoard, Player, WhiteKingEaten, BlackKingEaten)).
+set_state_board(state(_, Player, WhiteKingEaten, BlackKingEaten, GameConfig), NewBoard, state(NewBoard, Player, WhiteKingEaten, BlackKingEaten, GameConfig)).
 
 % get_state_player(+State, -Player)
-get_state_player(state(_, Player, _, _), Player).
+get_state_player(state(_, Player, _, _, _), Player).
 
 % set_state_player(+State, +Player, -NewState)
-set_state_player(state(Board, _, WhiteKingEaten, BlackKingEaten), NewPlayer, state(Board, NewPlayer, WhiteKingEaten, BlackKingEaten)).
+set_state_player(state(Board, _, WhiteKingEaten, BlackKingEaten, GameConfig), NewPlayer, state(Board, NewPlayer, WhiteKingEaten, BlackKingEaten, GameConfig)).
+
+% get_state_difficulty(+State, -Difficulty)
+get_state_difficulty(state(_, white, _, _, [_, [_, Difficulty], _]), Difficulty).
+get_state_difficulty(state(_, black, _, _, [_, _, [_, Difficulty]]), Difficulty).
 
 % king_eaten(+Color, +State)
-king_eaten(white, state(_, _, true, _)).
-king_eaten(black, state(_, _, _, true)).
+king_eaten(white, state(_, _, true, _, _)).
+king_eaten(black, state(_, _, _, true, _)).
 
 % set_king_eaten(+Color, +State, -NewState)
-set_king_eaten(white, state(Board, Player, _, BlackKingEaten), WhiteKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten)).
-set_king_eaten(black, state(Board, Player, WhiteKingEaten, _), BlackKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten)).
+set_king_eaten(white, state(Board, Player, _, BlackKingEaten, GameConfig), WhiteKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten, GameConfig)).
+set_king_eaten(black, state(Board, Player, WhiteKingEaten, _, GameConfig), BlackKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten, GameConfig)).
 
 % player_can_move_at(+State, +Position)
 player_can_move_at(State, Position) :-

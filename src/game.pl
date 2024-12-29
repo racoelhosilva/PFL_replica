@@ -19,7 +19,8 @@ game_loop(State) :-
     write(Winner).
 
 game_loop(State) :-
-    choose_move(State, 2, Move),
+    get_state_difficulty(State, Difficulty),
+    choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
     display_game(IntState),
     value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,
@@ -34,7 +35,7 @@ game_loop(State) :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(_GameConfig, state(Board, white, false, false)) :- new_board(Board).
+initial_state(GameConfig, state(Board, white, false, false, GameConfig)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -43,7 +44,7 @@ initial_state(_GameConfig, state(Board, white, false, false)) :- new_board(Board
 % visualizations will be valued. Flexible game state representations and visualization predicates will
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
-display_game(state(Board, Player, _, _)) :-
+display_game(state(Board, Player, _, _, _)) :-
     display_board(Board),
     display_player(Player),
     nl.
