@@ -33,7 +33,7 @@ game_loop(State) :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(_GameConfig, state(Board, white, false, false)) :- new_board(Board).
+initial_state(_GameConfig, state(Board, white, none)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -42,7 +42,7 @@ initial_state(_GameConfig, state(Board, white, false, false)) :- new_board(Board
 % visualizations will be valued. Flexible game state representations and visualization predicates will
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
-display_game(state(Board, Player, _, _)) :-
+display_game(state(Board, Player, _)) :-
     display_board(Board),
     display_player(Player),
     nl.
@@ -66,7 +66,7 @@ valid_moves(GameState, ListOfMoves) :-
 % whether the game is over, in which case it also identifies the winner (or draw). Note that this
 % predicate should not print anything to the terminal.
 game_over(State, Winner) :-
-    king_eaten(OppositeColor, State),
+    get_king_eaten(State, OppositeColor),
     opposite_color(OppositeColor, Winner).
 game_over(State, white) :-
     get_state_board(State, board(Board, Size)),
