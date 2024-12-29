@@ -8,7 +8,8 @@
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
-    initial_state('', State),
+    display_menu(GameConfig),
+    initial_state(GameConfig, State),
     display_game(State),
     game_loop(State), !.
 
