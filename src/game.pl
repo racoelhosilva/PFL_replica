@@ -87,6 +87,8 @@ value(GameState, Player, Value) :- evaluate_state(Player, GameState, Value).
 % 2 should return the best play at the time (using a greedy algorithm), considering the evaluation of
 % the game state as determined by the value/3 predicate. For human players, it should interact with
 % the user to read the move.
+choose_move(GameState, 0, Move) :-  % User chooses move
+    get_move(GameState, Move).
 choose_move(GameState, 1, Move) :-  % Choose random move
     valid_moves(GameState, Moves),
     random_member(Move, Moves).

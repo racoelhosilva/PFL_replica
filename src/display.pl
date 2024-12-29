@@ -10,6 +10,11 @@ read_number_aux(X, Acc):-
     read_number_aux(X, NextAcc).
 read_number_aux(X, X).
 
+read_dash :-
+	peek_char(Char),
+	Char = '-',
+	get_char(_).
+
 get_line(Result, Acc):-
     get_char(Char),
     Char \= '\n',
@@ -17,6 +22,11 @@ get_line(Result, Acc):-
     get_line(Result, Acc1).
 get_line(Result, Acc):-
     atom_chars(Result, Acc).
+
+get_option(Context, Value) :-
+    format('~a: ', [Context]),
+    repeat,
+    read_number(Value), !.
 
 get_menu_option(Min, Max, Context, Value):-
     format('~a between ~d and ~d: ', [Context, Min, Max]),
@@ -27,6 +37,28 @@ get_menu_option(Min, Max, Context, Value):-
 get_name(Context, Player):-
     format('Name for ~a: ', [Context]),
     get_line(Player, []).
+
+get_move(State, Move) :-
+    repeat,
+    get_option('Row', Row),
+    get_option('Column', Col),
+    Position = Row-Col,
+    write('You selected: '), write(Position), nl,
+    valid_piece_moves(State, Position, PieceMoves),
+    length(PieceMoves, Length),
+    Length > 0, !,
+    write('Valid moves: '), write(PieceMoves),nl,
+    get_menu_option(1, Length, 'Move', Index),
+    nth1(Index, PieceMoves, Move), !,
+    write('You selected: '), write(Move), nl.
+
+valid_piece_moves(State, Piece, Moves) :-
+    findall(Move, valid_piece_move(State, Piece, Move), Moves).
+
+valid_piece_move(State, Piece, transform(Piece)) :-
+    valid_move(State, transform(Piece)).
+valid_piece_move(State, Piece, step(Piece, Direction)) :-
+    valid_move(State, step(Piece, Direction)).
 
 get_gamemode(GameMode):-
     write('Please select the game mode:'), nl,
