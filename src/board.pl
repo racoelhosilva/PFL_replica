@@ -34,19 +34,19 @@ size(board(_Board, Size), Size).
 % in_bounds(+Board, +Position)
 in_bounds(board(_Board, Size), Row-Col) :- between(1, Size, Row), between(1, Size, Col).
 
-% get_piece(+Board, +Position, -Piece)
-get_piece(board(Board, _Size), Position, Piece) :-
-    get_matrix(Board, Position, Piece).
+% board_piece(+Board, +Position, -Piece)
+board_piece(board(Board, _Size), Position, Piece) :-
+    matrix_at(Board, Position, Piece).
 
 % place_piece(+Board, +InitialPosition, +FinalPosition, -NewBoard)
 place_piece(board(Board, Size), InitialPosition, FinalPosition, board(NewBoard, Size)) :-
-    get_matrix(Board, InitialPosition, Piece),
-    set_matrix(Board, FinalPosition, Piece, TempBoard),
-    set_matrix(TempBoard, InitialPosition, empty, NewBoard).
+    matrix_at(Board, InitialPosition, Piece),
+    set_matrix_at(Board, FinalPosition, Piece, TempBoard),
+    set_matrix_at(TempBoard, InitialPosition, empty, NewBoard).
 
-% get_piece_color(+Board, +Position, -Color)
-get_piece_color(board(Board, _Size), Position, Color) :-
-    get_matrix(Board, Position, Piece),
+% board_piece_color(+Board, +Position, -Color)
+board_piece_color(board(Board, _Size), Position, Color) :-
+    matrix_at(Board, Position, Piece),
     piece_color(Piece, Color).
 
 % as_king(?NormalPiece, ?KingPiece).
@@ -55,6 +55,6 @@ as_king(black_piece, black_king).
 
 % convert_to_king(+Board, +Position, -NewBoard)
 convert_to_king(board(Board, Size), Position, board(NewBoard, Size)) :-
-    get_matrix(Board, Position, Piece),
+    matrix_at(Board, Position, Piece),
     as_king(Piece, KingPiece),
-    set_matrix(Board, Position, KingPiece, NewBoard).
+    set_matrix_at(Board, Position, KingPiece, NewBoard).

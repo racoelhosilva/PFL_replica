@@ -66,15 +66,15 @@ valid_moves(GameState, ListOfMoves) :-
 % whether the game is over, in which case it also identifies the winner (or draw). Note that this
 % predicate should not print anything to the terminal.
 game_over(State, Winner) :-
-    get_king_eaten(State, OppositeColor),
+    king_eaten(State, OppositeColor),
     opposite_color(OppositeColor, Winner).
 game_over(State, white) :-
-    get_state_board(State, Board),
+    state_board(State, Board),
     size(Board, Size),
-    get_piece(Board, Size-Size, white_king).
+    board_piece(Board, Size-Size, white_king).
 game_over(State, black) :-
-    get_state_board(State, Board),
-    get_piece(Board, 1-1, black_king).
+    state_board(State, Board),
+    board_piece(Board, 1-1, black_king).
 
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a
