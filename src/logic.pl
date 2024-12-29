@@ -1,24 +1,22 @@
-:- use_module(library(aggregate)).
-
 :- include(board).
 
 % state_board(+State, -Board)
-state_board(state(Board, _, _), Board).
+state_board(state(Board, _Player, _KingEaten), Board).
 
-% set_state_board(+State, +NewBoard, -NewState)
-set_state_board(state(_, Player, KingEaten), NewBoard, state(NewBoard, Player, KingEaten)).
+% set_state_board(+State, +Board, -NewState)
+set_state_board(state(_OldBoard, Player, KingEaten), NewBoard, state(Board, Player, KingEaten)).
 
 % state_player(+State, -Player)
-state_player(state(_, Player, _), Player).
+state_player(state(_Board, Player, _KingEaten), Player).
 
 % set_state_player(+State, +Player, -NewState)
-set_state_player(state(Board, _, KingEaten), NewPlayer, state(Board, NewPlayer, KingEaten)).
+set_state_player(state(Board, _OldPlayer, KingEaten), Player, state(Board, Player, KingEaten)).
 
-% king_eaten(+State, +Color)
-king_eaten(state(_, _, KingEaten), KingEaten).
+% king_eaten(+State, +KingEaten)
+king_eaten(state(_Board, _Player, KingEaten), KingEaten).
 
-% set_king_eaten(+State, +Color, -NewState)
-set_king_eaten(state(Board, Player, _), KingEaten, state(Board, Player, KingEaten)).
+% set_king_eaten(+State, +KingEaten, -NewState)
+set_king_eaten(state(Board, Player, _OldKingEaten), KingEaten, state(Board, Player, KingEaten)).
 
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
 verify_and_set_king_eaten(Piece, State, State) :- \+ king(Piece), !.
@@ -48,8 +46,8 @@ switch_player(State, NewState) :-
     set_state_player(State, OtherPlayer, NewState).
 
 % new_position(+Color, +Direction, +PiecePosition, +Board, -NewPosition)
-new_position(_, _, Position, Board, _) :- \+ in_bounds(Board, Position), !, fail.
-new_position(Color, _, Position, Board, Position) :-
+new_position(_Color, _Direction, Position, Board, _NewPosition) :- \+ in_bounds(Board, Position), !, fail.
+new_position(Color, _Direction, Position, Board, Position) :-
     board_piece_color(Board, Position, OtherColor),
     OtherColor \= Color, !.
 
@@ -75,7 +73,7 @@ new_position(black, diagonal, Row-Col, Board, NewRow-NewCol) :-
     NextCol is Col - 1,
     new_position(black, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
 
-% player_can_move_at(+Player, +Board, +Position)
+% player_can_move_at(+Player, +Position, +Board)
 player_can_move_at(Player, Position, Board) :-
     in_bounds(Board, Position),
     board_piece_color(Board, Position, Player).
@@ -132,7 +130,7 @@ valid_move(State, transform(Position)) :-
     \+ king(Piece),
     seen_by_king(Player, _, Board, Position).
 
-% evaluate_piece(+Color, +Piece, +Position, -Value)
+% evaluate_piece(+Color, +BoardSize, +Piece, +Position, -Value)
 evaluate_piece(_Color, _BoardSize, empty, _Position, 0) :- !.
 
 evaluate_piece(white, BoardSize, white-king, BoardSize-BoardSize, 15) :- !.
@@ -150,10 +148,10 @@ evaluate_piece(Color, BoardSize, Piece, Row-Col, Value) :-
     evaluate_piece(OppositeColor, BoardSize, Piece, Row-Col, OppositeValue),
     Value is -OppositeValue.
 
-% evaluate_line(+Color, +Line, +Row, -Value)
+% evaluate_line(+Color, +BoardSize, +Line, +Row, -Value)
 evaluate_line(Color, BoardSize, Line, Row, Value) :- evaluate_line(Color, BoardSize, Line, Row, 1, 0, Value).
 
-% evaluate_line(+Color, +Line, +Row, +Col, +Accumulator, -Value)
+% evaluate_line(+Color, +BoardSize, +Line, +Row, +Col, +Accumulator, -Value)
 evaluate_line(_Color, _BoardSize, [], _Row, _Col, Acc, Acc).
 evaluate_line(Color, BoardSize, [Piece | LineTail], Row, Col, Acc, Value) :-
     evaluate_piece(Color, BoardSize, Piece, Row-Col, PieceValue),
@@ -164,7 +162,7 @@ evaluate_line(Color, BoardSize, [Piece | LineTail], Row, Col, Acc, Value) :-
 % evaluate_board(+Color, +Board, -Value)
 evaluate_board(Color, board(Board, BoardSize), Value) :- evaluate_board(Color, BoardSize, Board, 1, 0, Value).
 
-% evaluate_board(+Color, +Board, +Row, +Accumulator, -Value)
+% evaluate_board(+Color, +BoardSize, +Board, +Row, +Accumulator, -Value)
 evaluate_board(_Color, _BoardSize, [], _Row, Acc, Acc).
 evaluate_board(Color, BoardSize, [Line | BoardTail], Row, Acc, Value) :-
     evaluate_line(Color, BoardSize, Line, Row, LineValue),

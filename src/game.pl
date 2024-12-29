@@ -12,7 +12,7 @@ play :-
     display_game(State),
     game_loop(State), !.
 
-% game_loop(State)
+% game_loop(+State)
 game_loop(State) :-
     game_over(State, Winner), !,
     write(Winner).
