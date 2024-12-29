@@ -8,14 +8,6 @@ get_state_board(state(Board, _, _), Board).
 % set_state_board(+State, +NewBoard, -NewState)
 set_state_board(state(_, Player, KingEaten), NewBoard, state(NewBoard, Player, KingEaten)).
 
-% get_state_piece(+State, +Position, -Piece)
-get_state_piece(state(Board, _, _), Position, Piece) :-
-    get_piece(Board, Position, Piece).
-
-% place_state_piece(+State, +Position, +Piece, -NewState) :-
-place_state_piece(state(Board, Player, KingEaten), Position, Piece, state(NewBoard, Player, KingEaten)) :-
-    place_piece(Board, Position, Piece, NewBoard).
-
 % get_state_player(+State, -Player)
 get_state_player(state(_, Player, _), Player).
 
@@ -35,14 +27,13 @@ player_can_move_at(State, Position) :-
     get_piece_color(Board, Position, Player).
 
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
-verify_and_set_king_eaten(Piece, State, State) :- \+ is_king(Piece), !.
+verify_and_set_king_eaten(Piece, State, State) :- \+ king(Piece), !.
 verify_and_set_king_eaten(Piece, State, NewState) :-
     piece_color(Piece, Color),
     set_king_eaten(State, Color, NewState).
 
 % execute_move(+State, +Move, -NewState)
 execute_move(State, step(Pos, Direction), NewState) :-
-    player_can_move_at(State, Pos),
     get_state_board(State, Board),
     get_state_player(State, Player),
     new_position(Player, Direction, Board, Pos, NewPos),
@@ -52,7 +43,6 @@ execute_move(State, step(Pos, Direction), NewState) :-
     verify_and_set_king_eaten(ReplacedPiece, IntState, NewState).
 
 execute_move(State, transform(Pos), NewState) :-
-    player_can_move_at(State, Pos),
     get_state_board(State, Board),
     convert_to_king(Board, Pos, NewBoard),
     set_state_board(State, NewBoard, NewState).
@@ -64,9 +54,8 @@ switch_player(State, NewState) :-
     set_state_player(State, OtherPlayer, NewState).
 
 % new_position(+Color, +Direction, +Board, +PiecePosition, +NewPosition)
-% TODO: Maybe optimize this
-new_position(_, _, Board, Position, _) :- \+ in_bounds(Board, Position) , !, fail.
-new_position(Color, _, Board, Position, Position) :- 
+new_position(_, _, Board, Position, _) :- \+ in_bounds(Board, Position), !, fail.
+new_position(Color, _, Board, Position, Position) :-
     get_piece_color(Board, Position, OtherColor),
     OtherColor \= Color, !.
 
@@ -105,7 +94,7 @@ seen_by_king(Color, _Direction, Board, Position) :-
     blocks_sight(Color, Piece), !, fail.
 seen_by_king(_Color, _Direction, Board, Position) :- 
     get_piece(Board, Position, Piece),
-    is_king(Piece), !.
+    king(Piece), !.
 
 seen_by_king(white, vertical, Board, Row-Col) :-
     NextRow is Row - 1,
@@ -142,7 +131,7 @@ valid_move(State, transform(Position)) :-
     in_bounds(Board, Position),
     player_can_move_at(State, Position),
     get_piece(Board, Position, Piece),
-    \+ is_king(Piece),
+    \+ king(Piece),
     get_state_player(State, Player),
     seen_by_king(Player, _, Board, Position).
 

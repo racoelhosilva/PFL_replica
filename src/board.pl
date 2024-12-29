@@ -1,6 +1,7 @@
 :- use_module(library(between)).
 :- include(utils).
 
+% new_board(+Board)
 new_board(board([
     [white_king, white_piece, white_piece, white_piece, empty, empty, empty, empty],
     [white_piece, white_piece, white_piece, white_piece, empty, empty, empty, empty],
@@ -23,9 +24,12 @@ piece_color(empty, none).
 opposite_color(white, black).
 opposite_color(black, white).
 
-% is_king(?Piece)
-is_king(white_king).
-is_king(black_king).
+% king(?Piece)
+king(white_king).
+king(black_king).
+
+% size(+Board, -Size)
+size(board(_Board, Size), Size).
 
 % in_bounds(+Board, +Position)
 in_bounds(board(_Board, Size), Row-Col) :- between(1, Size, Row), between(1, Size, Col).
