@@ -53,11 +53,9 @@ execute_move(State, transform(Row-Col), NewState) :-
 
 % switch_player(?State, ?NewState)
 switch_player(State, NewState) :-
-    get_state_player(State, white),
-    set_state_player(State, black, NewState).
-switch_player(State, NewState) :-
-    get_state_player(State, black),
-    set_state_player(State, white, NewState).
+    get_state_player(State, Player),
+    opposite_color(Player, OtherPlayer),
+    set_state_player(State, OtherPlayer, NewState).
 
 % new_position(+Color, +Direction, +Board, +PiecePosition, +NewPosition)
 % TODO: Maybe optimize this
