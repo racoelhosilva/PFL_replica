@@ -16,13 +16,5 @@ set_matrix_at(Matrix, Col-Row, Value, NewMatrix) :-
     set_line_at(Line, Col, Value, NewLine),
     nth1(Row, NewMatrix, NewLine, MatrixRest).
 
-% get_max_key(+EntryList, ?MaxEntry)
-get_max_key([FirstEntry | ListTail], MaxEntry) :- get_max_key(ListTail, FirstEntry, MaxEntry).
-
-% get_max_key(+EntryList, +Accumulator, ?MaxEntry)
-get_max_key([], Accumulator, Accumulator).
-get_max_key([Key-Value | ListTail], CurrKey-_, MaxEntry) :-
-    Key > CurrKey, !,
-    get_max_key(ListTail, Key-Value, MaxEntry).
-get_max_key([_ | ListTail], CurrEntry, MaxEntry) :-
-    get_max_key(ListTail, CurrEntry, MaxEntry).
+% compare_keys(+Entry1, +Entry2)
+compare_keys(Key1-_, Key2-_) :- Key1 =< Key2.

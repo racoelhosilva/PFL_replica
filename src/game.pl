@@ -93,5 +93,5 @@ choose_move(GameState, 1, Move) :-  % Choose random move
 choose_move(GameState, 2, Move) :-  % Choose best (greedy) move
     valid_moves(GameState, Moves),
     evaluate_moves(GameState, Moves, EvaluatedMoves),
-    get_max_key(EvaluatedMoves, _-Move).
+    max_member(compare_keys, _-Move, EvaluatedMoves).
     
