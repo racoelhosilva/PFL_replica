@@ -1,92 +1,82 @@
-:- use_module(library(aggregate)).
-
 :- include(board).
 
-% get_state_board(+State, -Board)
-get_state_board(state(Board, _, _, _), Board).
+% state_board(+State, -Board)
+state_board(state(Board, _Player, _KingEaten), Board).
 
-% set_state_board(+State, +NewBoard, -NewState)
-set_state_board(state(_, Player, WhiteKingEaten, BlackKingEaten), NewBoard, state(NewBoard, Player, WhiteKingEaten, BlackKingEaten)).
+% set_state_board(+State, +Board, -NewState)
+set_state_board(state(_OldBoard, Player, KingEaten), NewBoard, state(Board, Player, KingEaten)).
 
-% get_state_player(+State, -Player)
-get_state_player(state(_, Player, _, _), Player).
+% state_player(+State, -Player)
+state_player(state(_Board, Player, _KingEaten), Player).
 
 % set_state_player(+State, +Player, -NewState)
-set_state_player(state(Board, _, WhiteKingEaten, BlackKingEaten), NewPlayer, state(Board, NewPlayer, WhiteKingEaten, BlackKingEaten)).
+set_state_player(state(Board, _OldPlayer, KingEaten), Player, state(Board, Player, KingEaten)).
 
-% king_eaten(+Color, +State)
-king_eaten(white, state(_, _, true, _)).
-king_eaten(black, state(_, _, _, true)).
+% king_eaten(+State, +KingEaten)
+king_eaten(state(_Board, _Player, KingEaten), KingEaten).
 
-% set_king_eaten(+Color, +State, -NewState)
-set_king_eaten(white, state(Board, Player, _, BlackKingEaten), WhiteKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten)).
-set_king_eaten(black, state(Board, Player, WhiteKingEaten, _), BlackKingEaten, state(Board, Player, WhiteKingEaten, BlackKingEaten)).
-
-% player_can_move_at(+State, +Position)
-player_can_move_at(State, Position) :-
-    get_state_board(State, Board),
-    get_state_player(State, Player),
-    piece_at_is(Board, Position, Player).
+% set_king_eaten(+State, +KingEaten, -NewState)
+set_king_eaten(state(Board, Player, _OldKingEaten), KingEaten, state(Board, Player, KingEaten)).
 
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
-verify_and_set_king_eaten(Piece, State, State) :- \+ is_king(Piece), !.
+verify_and_set_king_eaten(Piece, State, State) :- \+ king(Piece), !.
 verify_and_set_king_eaten(Piece, State, NewState) :-
     piece_color(Piece, Color),
-    set_king_eaten(Color, State, true, NewState).
+    set_king_eaten(State, Color, NewState).
 
 % execute_move(+State, +Move, -NewState)
-execute_move(State, step(Row-Col, Direction), NewState) :-
-    player_can_move_at(State, Row-Col),
-    get_state_board(State, Board),
-    get_state_player(State, Player),
-    new_position(Player, Direction, Board, Row-Col, NewRow-NewCol),
-    get_board(Board, NewRow-NewCol, ReplacedPiece),
-    place_piece(Board, Row-Col, NewRow-NewCol, NewBoard),
-    set_state_board(State, NewBoard, IntState),
-    verify_and_set_king_eaten(ReplacedPiece, IntState, NewState).
+execute_move(State, step(Pos, Direction), NewState) :-
+    state_board(State, Board),
+    state_player(State, Player),
+    new_position(Player, Direction, Pos, Board, NewPos),
+    board_piece(Board, NewPos, ReplacedPiece),
+    place_piece(Board, Pos, NewPos, NewBoard),
+    set_state_board(State, NewBoard, TempState),
+    verify_and_set_king_eaten(ReplacedPiece, TempState, NewState).
 
-execute_move(State, transform(Row-Col), NewState) :-
-    player_can_move_at(State, Row-Col),
-    get_state_board(State, Board),
-    convert_to_king(Board, Row-Col, NewBoard),
+execute_move(State, transform(Pos), NewState) :-
+    state_board(State, Board),
+    convert_to_king(Board, Pos, NewBoard),
     set_state_board(State, NewBoard, NewState).
 
 % switch_player(?State, ?NewState)
 switch_player(State, NewState) :-
-    get_state_player(State, white),
-    set_state_player(State, black, NewState).
-switch_player(State, NewState) :-
-    get_state_player(State, black),
-    set_state_player(State, white, NewState).
+    state_player(State, Player),
+    opposite_color(Player, OtherPlayer),
+    set_state_player(State, OtherPlayer, NewState).
 
-% new_position(+Color, +Direction, +Board, +PiecePosition, +NewPosition)
-% TODO: Maybe optimize this
-new_position(_, _, Board, Position, _) :- \+ in_bounds(Board, Position) , !, fail.
-new_position(Color, _, Board, Position, Position) :- 
-    piece_at_is(Board, Position, OtherColor),
+% new_position(+Color, +Direction, +PiecePosition, +Board, -NewPosition)
+new_position(_Color, _Direction, Position, Board, _NewPosition) :- \+ in_bounds(Board, Position), !, fail.
+new_position(Color, _Direction, Position, Board, Position) :-
+    board_piece_color(Board, Position, OtherColor),
     OtherColor \= Color, !.
 
-new_position(white, vertical, Board, Row-Col, Row-NewCol) :-
+new_position(white, vertical, Row-Col, Board, Row-NewCol) :-
     NextCol is Col + 1,
-    new_position(white, vertical, Board, Row-NextCol, Row-NewCol).
-new_position(white, horizontal, Board, Row-Col, NewRow-Col) :-
+    new_position(white, vertical, Row-NextCol, Board, Row-NewCol).
+new_position(white, horizontal, Row-Col, Board, NewRow-Col) :-
     NextRow is Row + 1,
-    new_position(white, horizontal, Board, NextRow-Col, NewRow-Col).
-new_position(white, diagonal, Board, Row-Col, NewRow-NewCol) :-
+    new_position(white, horizontal, NextRow-Col, Board, NewRow-Col).
+new_position(white, diagonal, Row-Col, Board, NewRow-NewCol) :-
     NextRow is Row + 1,
     NextCol is Col + 1,
-    new_position(white, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
+    new_position(white, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
 
-new_position(black, vertical, Board, Row-Col, Row-NewCol) :-
+new_position(black, vertical, Row-Col, Board, Row-NewCol) :-
     NextCol is Col - 1,
-    new_position(black, vertical, Board, Row-NextCol, Row-NewCol).
-new_position(black, horizontal, Board, Row-Col, NewRow-Col) :-
+    new_position(black, vertical, Row-NextCol, Board, Row-NewCol).
+new_position(black, horizontal, Row-Col, Board, NewRow-Col) :-
     NextRow is Row - 1,
-    new_position(black, horizontal, Board, NextRow-Col, NewRow-Col).
-new_position(black, diagonal, Board, Row-Col, NewRow-NewCol) :-
+    new_position(black, horizontal, NextRow-Col, Board, NewRow-Col).
+new_position(black, diagonal, Row-Col, Board, NewRow-NewCol) :-
     NextRow is Row - 1,
     NextCol is Col - 1,
-    new_position(black, diagonal, Board, NextRow-NextCol, NewRow-NewCol).
+    new_position(black, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
+
+% player_can_move_at(+Player, +Position, +Board)
+player_can_move_at(Player, Position, Board) :-
+    in_bounds(Board, Position),
+    board_piece_color(Board, Position, Player).
 
 % blocks_sight(?Color, ?Piece)
 blocks_sight(Color, Piece) :-
@@ -94,14 +84,14 @@ blocks_sight(Color, Piece) :-
     piece_color(Piece, OppositeColor).
 
 % seen_by_king(?Color, ?Direction, +Board, +Position)
-seen_by_king(_Color, _Direction, Board, Row-Col) :- \+ in_bounds(Board, Row-Col), !, fail.
+seen_by_king(_Color, _Direction, Board, Position) :- \+ in_bounds(Board, Position), !, fail.
 
-seen_by_king(Color, _Direction, Board, Row-Col) :- 
-    get_board(Board, Row-Col, Piece),
+seen_by_king(Color, _Direction, Board, Position) :- 
+    board_piece(Board, Position, Piece),
     blocks_sight(Color, Piece), !, fail.
-seen_by_king(_Color, _Direction, Board, Row-Col) :- 
-    get_board(Board, Row-Col, Piece),
-    is_king(Piece), !.
+seen_by_king(_Color, _Direction, Board, Position) :- 
+    board_piece(Board, Position, Piece),
+    king(Piece), !.
 
 seen_by_king(white, vertical, Board, Row-Col) :-
     NextRow is Row - 1,
@@ -125,87 +115,85 @@ seen_by_king(black, diagonal, Board, Row-Col) :-
     NextCol is Col + 1,
     seen_by_king(black, diagonal, Board, NextRow-NextCol).
 
-% valid_move(+State, ?Move)
+% valid_move(+State, -Move)
 valid_move(State, step(Position, Direction)) :-
-    get_state_board(State, Board),
-    in_bounds(Board, Position),
-    player_can_move_at(State, Position),
-    get_state_player(State, Player),
-    new_position(Player, Direction, Board, Position, _NewPosition).
+    state_board(State, Board),
+    state_player(State, Player),
+    player_can_move_at(Player, Position, Board),
+    new_position(Player, Direction, Position, Board, _NewPosition).
 
 valid_move(State, transform(Position)) :-
-    get_state_board(State, Board),
-    in_bounds(Board, Position),
-    player_can_move_at(State, Position),
-    get_board(Board, Position, Piece),
-    \+ is_king(Piece),
-    get_state_player(State, Player),
+    state_board(State, Board),
+    state_player(State, Player),
+    player_can_move_at(Player, Position, Board),
+    board_piece(Board, Position, Piece),
+    \+ king(Piece),
     seen_by_king(Player, _, Board, Position).
 
-% evaluate_piece(+Color, +Piece, +Position, ?Value)
-evaluate_piece(_Color, empty, _Position, 0) :- !.
+% evaluate_piece(+Color, +BoardSize, +Piece, +Position, -Value)
+evaluate_piece(_Color, _BoardSize, empty, _Position, 0) :- !.
 
-evaluate_piece(white, white-king, 8-8, 15) :- !.
-evaluate_piece(black, black_king, 1-1, 15) :- !.
+evaluate_piece(white, BoardSize, white-king, BoardSize-BoardSize, 15) :- !.
+evaluate_piece(black, _BoardSize, black_king, 1-1, 15) :- !.
 
-evaluate_piece(white, Piece, Row-Col, Value) :-
+evaluate_piece(white, BoardSize, Piece, Row-Col, Value) :-
     piece_color(Piece, white), !,
-    Value is 2 + 3 / ((8 - Row) + (8 - Col) + 1).
-evaluate_piece(black, Piece, Row-Col, Value) :-
+    Value is 2 + 3 / ((BoardSize - Row) + (BoardSize - Col) + 1).
+evaluate_piece(black, _BoardSize, Piece, Row-Col, Value) :-
     piece_color(Piece, black), !,
     Value is 2 + 3 / ((Row - 1) + (Col - 1) + 1).
 
-evaluate_piece(Color, Piece, Row-Col, Value) :-
+evaluate_piece(Color, BoardSize, Piece, Row-Col, Value) :-
     opposite_color(Color, OppositeColor),
-    evaluate_piece(OppositeColor, Piece, Row-Col, OppositeValue),
+    evaluate_piece(OppositeColor, BoardSize, Piece, Row-Col, OppositeValue),
     Value is -OppositeValue.
 
-% evaluate_line(+Color, +Line, +Row, ?Value)
-evaluate_line(Color, Line, Row, Value) :- evaluate_line(Color, Line, Row, 1, 0, Value).
+% evaluate_line(+Color, +BoardSize, +Line, +Row, -Value)
+evaluate_line(Color, BoardSize, Line, Row, Value) :- evaluate_line(Color, BoardSize, Line, Row, 1, 0, Value).
 
-% evaluate_line(+Color, +Line, +Row, +Col, +Accumulator, ?Value)
-evaluate_line(_Color, [], _Row, _Col, Acc, Acc).
-evaluate_line(Color, [Piece | LineTail], Row, Col, Acc, Value) :-
-    evaluate_piece(Color, Piece, Row-Col, PieceValue),
+% evaluate_line(+Color, +BoardSize, +Line, +Row, +Col, +Accumulator, -Value)
+evaluate_line(_Color, _BoardSize, [], _Row, _Col, Acc, Acc).
+evaluate_line(Color, BoardSize, [Piece | LineTail], Row, Col, Acc, Value) :-
+    evaluate_piece(Color, BoardSize, Piece, Row-Col, PieceValue),
     NewCol is Col + 1,
     NewAcc is Acc + PieceValue,
-    evaluate_line(Color, LineTail, Row, NewCol, NewAcc, Value).
+    evaluate_line(Color, BoardSize, LineTail, Row, NewCol, NewAcc, Value).
 
-% evaluate_board(+Color, +Board, ?Value)
-evaluate_board(Color, Board, Value) :- evaluate_board(Color, Board, 1, 0, Value).
+% evaluate_board(+Color, +Board, -Value)
+evaluate_board(Color, board(Board, BoardSize), Value) :- evaluate_board(Color, BoardSize, Board, 1, 0, Value).
 
-% evaluate_board(+Color, +Board, +Row, +Accumulator, ?Value)
-evaluate_board(_Color, [], _Row, Acc, Acc).
-evaluate_board(Color, [Line | BoardTail], Row, Acc, Value) :-
-    evaluate_line(Color, Line, Row, LineValue),
+% evaluate_board(+Color, +BoardSize, +Board, +Row, +Accumulator, -Value)
+evaluate_board(_Color, _BoardSize, [], _Row, Acc, Acc).
+evaluate_board(Color, BoardSize, [Line | BoardTail], Row, Acc, Value) :-
+    evaluate_line(Color, BoardSize, Line, Row, LineValue),
     NewRow is Row + 1,
     NewAcc is Acc + LineValue,
-    evaluate_board(Color, BoardTail, NewRow, NewAcc, Value).
+    evaluate_board(Color, BoardSize, BoardTail, NewRow, NewAcc, Value).
 
-% evaluate_state(+Color, +State, ?Value)
+% evaluate_state(+Color, +State, -Value)
 evaluate_state(Color, State, Value) :-
     opposite_color(Color, OppositeColor),
-    king_eaten(OppositeColor, State), !,
-    set_king_eaten(OppositeColor, State, false, NewState),
+    king_eaten(State, OppositeColor), !,
+    set_king_eaten(State, none, NewState),
     evaluate_state(Color, NewState, SubValue),
     Value is SubValue + 5.
 
 evaluate_state(Color, State, Value) :-
-    king_eaten(Color, State), !,
-    set_king_eaten(Color, State, false, NewState),
+    king_eaten(State, Color), !,
+    set_king_eaten(State, none, NewState),
     evaluate_state(Color, NewState, SubValue),
     Value is SubValue - 5.
 
 evaluate_state(Color, State, Value) :-
-    get_state_board(State, Board),
+    state_board(State, Board),
     evaluate_board(Color, Board, Value).
 
-% evaluate_move(+State, +Move, ?EvaluatedMove)
+% evaluate_move(+State, +Move, -EvaluatedMove)
 evaluate_move(State, Move, Value-Move) :-
-    get_state_player(State, Player),
+    state_player(State, Player),
     execute_move(State, Move, PossibleState),
     evaluate_state(Player, PossibleState, Value).
     
-% evaluate_moves(+State, +Moves, ?EvaluatedMoves)
+% evaluate_moves(+State, +Moves, -EvaluatedMoves)
 evaluate_moves(State, Moves, EvaluatedMoves) :-
     maplist(evaluate_move(State), Moves, EvaluatedMoves).

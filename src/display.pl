@@ -12,7 +12,7 @@ display_line(Line) :-
     fail.
 display_line(_Line) :- nl.
 
-display_board(Board) :- 
+display_board(board(Board, _Size)) :- 
     reverse(Board, RevBoard),
     member(Line, RevBoard),
     display_line(Line),
