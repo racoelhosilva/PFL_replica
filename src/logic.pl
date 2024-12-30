@@ -4,7 +4,7 @@
 state_board(state(Board, _Player, _KingEaten), Board).
 
 % set_state_board(+State, +Board, -NewState)
-set_state_board(state(_OldBoard, Player, KingEaten), NewBoard, state(Board, Player, KingEaten)).
+set_state_board(state(_OldBoard, Player, KingEaten), Board, state(Board, Player, KingEaten)).
 
 % state_player(+State, -Player)
 state_player(state(_Board, Player, _KingEaten), Player).
