@@ -10,10 +10,15 @@ read_number_aux(X, Acc):-
     read_number_aux(X, NextAcc).
 read_number_aux(X, X).
 
-read_dash :-
-	peek_char(Char),
-	Char = '-',
-	get_char(_).
+get_option(Min, Max, Context, Value):-
+    format('~a between ~d and ~d: ', [Context, Min, Max]),
+    read_number(Value),
+    between(Min, Max, Value), !,
+    write('\e\e[0J').
+get_option(Min, Max, Context, Value):-
+    skip_line,
+    write('Invalid option!\e[A\e[2K\r'),
+    get_option(Min, Max, Context, Value).
 
 get_line(Result, Acc):-
     get_char(Char),
@@ -23,32 +28,20 @@ get_line(Result, Acc):-
 get_line(Result, Acc):-
     atom_chars(Result, Acc).
 
-get_option(Context, Value) :-
-    format('~a: ', [Context]),
-    repeat,
-    read_number(Value), !.
-
-get_menu_option(Min, Max, Context, Value):-
-    format('~a between ~d and ~d: ', [Context, Min, Max]),
-    repeat,
-    read_number(Value),
-    between(Min, Max, Value), !.
-
 get_name(Context, Player):-
     format('Name for ~a: ', [Context]),
     get_line(Player, []).
 
 get_move(State, Move) :-
     repeat,
-    get_option('Row', Row),
-    get_option('Column', Col),
+    get_option(1, 8, 'Row', Row),
+    get_option(1, 8, 'Column', Col),
     Position = Row-Col,
-    write('You selected: '), write(Position), nl,
     valid_piece_moves(State, Position, PieceMoves),
     length(PieceMoves, Length),
     Length > 0, !,
     write('Valid moves: '), write(PieceMoves),nl,
-    get_menu_option(1, Length, 'Move', Index),
+    get_option(1, Length, 'Move', Index),
     nth1(Index, PieceMoves, Move), !,
     write('You selected: '), write(Move), nl.
 
@@ -66,13 +59,13 @@ get_gamemode(GameMode):-
     write('\t2. Human vs. Computer'), nl,
     write('\t3. Computer vs. Human'), nl,
     write('\t4. Computer vs. Computer'), nl,
-    get_menu_option(1, 4, 'Game mode', GameMode).
+    get_option(1, 4, 'Game mode', GameMode).
 
 get_difficulty(Difficulty):-
     write('Please select the difficulty level:'), nl,
     write('\t1. Random'), nl,
     write('\t2. Greedy'), nl,
-    get_menu_option(1, 2, 'Difficulty level', Difficulty).
+    get_option(1, 2, 'Difficulty level', Difficulty).
 
 display_menu(GameConfig) :- 
     write('Welcome to Replica!'), nl,
