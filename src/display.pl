@@ -4,31 +4,30 @@
 
 get_option(Min, Max, Context, Value):-
     format('~a between ~d and ~d: ', [Context, Min, Max]),
-    read_number(Value),
-    between(Min, Max, Value), !,
-    write('\e\e[0J').
+    input_number(Value),
+    between(Min, Max, Value), !.
 get_option(Min, Max, Context, Value):-
-    skip_line,
-    write('Invalid option!\e[A\e[2K\r'),
+    write('Invalid option! '),
     get_option(Min, Max, Context, Value).
-
-get_line(Result, Acc):-
-    get_char(Char),
-    Char \= '\n',
-    append(Acc, [Char], Acc1),
-    get_line(Result, Acc1).
-get_line(Result, Acc):-
-    atom_chars(Result, Acc).
 
 get_name(Context, Player):-
     format('Name for ~a: ', [Context]),
-    get_line(Player, []).
+    input_string(Player).
+
+get_position(Position, Size):-
+    write('Choose the position of the piece to move: '),
+    input_position(Position, Size),
+    Position = Row-Col,
+    between(1, Size, Row),
+    between(1, Size, Col), !.
+get_position(Position, Size):-
+    write('Invalid position! '),
+    get_position(Position, Size).
 
 get_move(State, Move) :-
-    repeat,
-    get_option(1, 8, 'Row', Row),
-    get_option(1, 8, 'Column', Col),
-    Position = Row-Col,
+    state_board(State, Board),
+    size(Board, Size),
+    get_position(Position, Size),
     valid_piece_moves(State, Position, PieceMoves),
     length(PieceMoves, Length),
     Length > 0, !,
@@ -36,6 +35,9 @@ get_move(State, Move) :-
     get_option(1, Length, 'Move', Index),
     nth1(Index, PieceMoves, Move), !,
     write('You selected: '), write(Move), nl.
+get_move(State, Move) :-
+    write('No piece in that position can move! '),
+    get_move(State, Move).
 
 get_gamemode(GameMode):-
     write('Please select the game mode:'), nl,

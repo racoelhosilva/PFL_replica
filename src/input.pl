@@ -1,8 +1,6 @@
 :- use_module(library(between)).
 :- use_module(library(lists)).
 
-:- include(utils).
-
 % input_number(-Value),
 input_number(Number):-
     input_number_aux(Number, 0).
