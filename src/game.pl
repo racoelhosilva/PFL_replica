@@ -8,7 +8,8 @@
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
-    initial_state('', State),
+    display_menu(GameConfig),
+    initial_state(GameConfig, State),
     display_game(State),
     game_loop(State), !.
 
@@ -18,7 +19,8 @@ game_loop(State) :-
     write(Winner).
 
 game_loop(State) :-
-    choose_move(State, 2, Move),
+    get_state_difficulty(State, Difficulty),
+    choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
     display_game(IntState),
     value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,
@@ -33,7 +35,7 @@ game_loop(State) :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(_GameConfig, state(Board, white, none)) :- new_board(Board).
+initial_state(GameConfig, state(Board, white, none, GameConfig)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -42,7 +44,7 @@ initial_state(_GameConfig, state(Board, white, none)) :- new_board(Board).
 % visualizations will be valued. Flexible game state representations and visualization predicates will
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
-display_game(state(Board, Player, _)) :-
+display_game(state(Board, Player, _KingEaten, _GameConfig)) :-
     display_board(Board),
     display_player(Player),
     nl.
@@ -87,6 +89,8 @@ value(GameState, Player, Value) :- evaluate_state(Player, GameState, Value).
 % 2 should return the best play at the time (using a greedy algorithm), considering the evaluation of
 % the game state as determined by the value/3 predicate. For human players, it should interact with
 % the user to read the move.
+choose_move(GameState, 0, Move) :-  % User chooses move
+    get_move(GameState, Move).
 choose_move(GameState, 1, Move) :-  % Choose random move
     valid_moves(GameState, Moves),
     random_member(Move, Moves).

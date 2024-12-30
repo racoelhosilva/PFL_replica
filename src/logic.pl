@@ -1,22 +1,26 @@
 :- include(board).
 
 % state_board(+State, -Board)
-state_board(state(Board, _Player, _KingEaten), Board).
+state_board(state(Board, _Player, _KingEaten, _GameConfig), Board).
 
 % set_state_board(+State, +Board, -NewState)
-set_state_board(state(_OldBoard, Player, KingEaten), Board, state(Board, Player, KingEaten)).
+set_state_board(state(_OldBoard, Player, KingEaten, GameConfig), Board, state(Board, Player, KingEaten, GameConfig)).
 
 % state_player(+State, -Player)
-state_player(state(_Board, Player, _KingEaten), Player).
+state_player(state(_Board, Player, _KingEaten, _GameConfig), Player).
 
 % set_state_player(+State, +Player, -NewState)
-set_state_player(state(Board, _OldPlayer, KingEaten), Player, state(Board, Player, KingEaten)).
+set_state_player(state(Board, _OldPlayer, KingEaten, GameConfig), Player, state(Board, Player, KingEaten, GameConfig)).
+
+% get_state_difficulty(+State, -Difficulty)
+get_state_difficulty(state(_, white, _, [_, [_, Difficulty], _]), Difficulty).
+get_state_difficulty(state(_, black, _, [_, _, [_, Difficulty]]), Difficulty).
 
 % king_eaten(+State, +KingEaten)
-king_eaten(state(_Board, _Player, KingEaten), KingEaten).
+king_eaten(state(_Board, _Player, KingEaten, _GameConfig), KingEaten).
 
 % set_king_eaten(+State, +KingEaten, -NewState)
-set_king_eaten(state(Board, Player, _OldKingEaten), KingEaten, state(Board, Player, KingEaten)).
+set_king_eaten(state(Board, Player, _OldKingEaten, GameConfig), KingEaten, state(Board, Player, KingEaten, GameConfig)).
 
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
 verify_and_set_king_eaten(Piece, State, State) :- \+ king(Piece), !.
@@ -129,6 +133,16 @@ valid_move(State, transform(Position)) :-
     board_piece(Board, Position, Piece),
     \+ king(Piece),
     seen_by_king(Player, _, Board, Position).
+
+% valid_piece_moves(+State, +Position, -Moves)
+valid_piece_moves(State, Piece, Moves) :-
+    findall(Move, valid_piece_move(State, Piece, Move), Moves).
+
+% valid_piece_move(+State, +Piece, -Move)
+valid_piece_move(State, Piece, step(Piece, Direction)) :-
+    valid_move(State, step(Piece, Direction)).
+valid_piece_move(State, Piece, transform(Piece)) :-
+    valid_move(State, transform(Piece)).
 
 % evaluate_piece(+Color, +BoardSize, +Piece, +Position, -Value)
 evaluate_piece(_Color, _BoardSize, empty, _Position, 0) :- !.
