@@ -134,6 +134,16 @@ valid_move(State, transform(Position)) :-
     \+ king(Piece),
     seen_by_king(Player, _, Board, Position).
 
+% valid_piece_moves(+State, +Position, -Moves)
+valid_piece_moves(State, Piece, Moves) :-
+    findall(Move, valid_piece_move(State, Piece, Move), Moves).
+
+% valid_piece_move(+State, +Piece, -Move)
+valid_piece_move(State, Piece, step(Piece, Direction)) :-
+    valid_move(State, step(Piece, Direction)).
+valid_piece_move(State, Piece, transform(Piece)) :-
+    valid_move(State, transform(Piece)).
+
 % evaluate_piece(+Color, +BoardSize, +Piece, +Position, -Value)
 evaluate_piece(_Color, _BoardSize, empty, _Position, 0) :- !.
 

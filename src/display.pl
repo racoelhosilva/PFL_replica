@@ -45,14 +45,6 @@ get_move(State, Move) :-
     nth1(Index, PieceMoves, Move), !,
     write('You selected: '), write(Move), nl.
 
-valid_piece_moves(State, Piece, Moves) :-
-    findall(Move, valid_piece_move(State, Piece, Move), Moves).
-
-valid_piece_move(State, Piece, transform(Piece)) :-
-    valid_move(State, transform(Piece)).
-valid_piece_move(State, Piece, step(Piece, Direction)) :-
-    valid_move(State, step(Piece, Direction)).
-
 get_gamemode(GameMode):-
     write('Please select the game mode:'), nl,
     write('\t1. Human vs. Human'), nl,
