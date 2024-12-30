@@ -76,24 +76,32 @@ display_options(4, [Name1, Difficulty1], [Name2, Difficulty2]) :-
     get_name('Computer 2', Name2),
     get_difficulty(Difficulty2).
 
-display_cell(empty) :- write(.).
-display_cell(white_piece) :- write(w).
-display_cell(white_king) :- write(+).
-display_cell(black_piece) :- write(b).
-display_cell(black_king) :- write(*).
+display_cell(empty) :- write('|'), write(.).
+display_cell(white_piece) :- write('|'), write(w).
+display_cell(white_king) :- write('|'), write(+).
+display_cell(black_piece) :- write('|'), write(b).
+display_cell(black_king) :- write('|'), write(*).
 
-display_line(Line) :- 
+display_line(Line, _LineNumber) :- 
+    write('-----------------'), nl,
     member(Cell, Line),
     display_cell(Cell),
     fail.
-display_line(_Line) :- nl.
+display_line(_Line, LineNumber) :- write('| '), write(LineNumber), nl.
+
+display_board_lines([], _).
+display_board_lines([Line|Rest], LineNumber) :- 
+    display_line(Line, LineNumber),
+    NewLineNumber is LineNumber - 1,
+    display_board_lines(Rest, NewLineNumber).
 
 display_board(board(Board, _Size)) :- 
+    
     reverse(Board, RevBoard),
-    member(Line, RevBoard),
-    display_line(Line),
-    fail.
-display_board(_Board).
+    length(Board, TotalLines),
+    display_board_lines(RevBoard, TotalLines),
+    write('-----------------'), nl, 
+    write(' A B C D E F G H'), nl, nl.
 
-display_player(white) :- write('Whites\' turn: '), nl.
-display_player(black) :- write('Blacks\' turn: '), nl.   % Changing color according to the pieces would be nice :)
+display_player(white) :- write('\tWhites\' turn').
+display_player(black) :- write('\tBlacks\' turn').   % Changing color according to the pieces would be nice :)
