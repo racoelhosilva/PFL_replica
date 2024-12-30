@@ -1,14 +1,6 @@
 :- use_module(library(lists)).
 
-read_number(X):-
-    read_number_aux(X, 0).
-
-read_number_aux(X, Acc):- 
-    get_code(C),
-    between(48, 57, C), !,
-    NextAcc is 10 * Acc + (C - 48),
-    read_number_aux(X, NextAcc).
-read_number_aux(X, X).
+:- include(input).
 
 get_option(Min, Max, Context, Value):-
     format('~a between ~d and ~d: ', [Context, Min, Max]),
