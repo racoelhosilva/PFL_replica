@@ -78,29 +78,45 @@ display_options(4, [Name1, Difficulty1], [Name2, Difficulty2]) :-
     get_name('Computer 2', Name2),
     get_difficulty(Difficulty2).
 
+put_cell_pixel :- write(' ').
+
+put_cell_line(_Height, 0).
+put_cell_line(Height, Width) :-
+    put_cell_pixel,
+    Width1 is Width - 1,
+    put_cell_line(Height, Width1).
+
+put_cell_aux(0, _).
+put_cell_aux(Height, Width) :-
+    put_cell_line(Height, Width),
+    move_cursor_down(1),
+    move_cursor_left(Width),
+    Height1 is Height - 1,
+    put_cell_aux(Height1, Width).
+
+put_cell :-
+    tile_width(Width),
+    tile_height(Height),
+    put_cell_aux(Height, Width),
+    move_cursor_right(Width),
+    move_cursor_up(Height).
 
 draw_cell(Row, Col) :-
     Sum is Row + Col,
     Sum mod 2 =:= 0,
     background_color_rgb(255,255,255),
-    write('      '), move_cursor_down(1), move_cursor_left(6),
-    write('      '), move_cursor_down(1), move_cursor_left(6),
-    write('      '), move_cursor_down(1), move_cursor_left(6),
-    move_cursor_right(6), move_cursor_up(3).
+    put_cell.
 draw_cell(Row, Col) :-
     Sum is Row + Col,
     Sum mod 2 =:= 1,
     background_color_rgb(0,0,0),
-    write('      '), move_cursor_down(1), move_cursor_left(6),
-    write('      '), move_cursor_down(1), move_cursor_left(6),
-    write('      '), move_cursor_down(1), move_cursor_left(6),
-    move_cursor_right(6), move_cursor_up(3).
+    put_cell.
 
 draw_piece(Symbol) :-
     tile_height(Height),
     tile_width(Width),
-    CenterX is Width // 2,
-    CenterY is Height // 2,
+    CenterX is (Width // 2) + 1,
+    CenterY is (Height-1) // 2,
     move_cursor_left(CenterX),
     move_cursor_down(CenterY),
     write(Symbol),
