@@ -2,6 +2,7 @@
 :- use_module(library(lists)).
 
 :- include(input).
+:- include(interface).
 
 get_option(Min, Max, Context, Value):-
     format('~a between ~d and ~d: ', [Context, Min, Max]),
@@ -77,32 +78,65 @@ display_options(4, [Name1, Difficulty1], [Name2, Difficulty2]) :-
     get_name('Computer 2', Name2),
     get_difficulty(Difficulty2).
 
-display_cell(empty) :- write('|'), write(.).
-display_cell(white_piece) :- write('|'), write(w).
-display_cell(white_king) :- write('|'), write(+).
-display_cell(black_piece) :- write('|'), write(b).
-display_cell(black_king) :- write('|'), write(*).
 
-display_line(Line, _LineNumber) :- 
-    write('-----------------'), nl,
-    member(Cell, Line),
-    display_cell(Cell),
-    fail.
-display_line(_Line, LineNumber) :- write('| '), write(LineNumber), nl.
+draw_cell(Row, Col) :-
+    Sum is Row + Col,
+    Sum mod 2 =:= 0,
+    background_color_rgb(255,255,255),
+    write('      '), move_cursor_down(1), move_cursor_left(6),
+    write('      '), move_cursor_down(1), move_cursor_left(6),
+    write('      '), move_cursor_down(1), move_cursor_left(6),
+    move_cursor_right(6), move_cursor_up(3).
+draw_cell(Row, Col) :-
+    Sum is Row + Col,
+    Sum mod 2 =:= 1,
+    background_color_rgb(0,0,0),
+    write('      '), move_cursor_down(1), move_cursor_left(6),
+    write('      '), move_cursor_down(1), move_cursor_left(6),
+    write('      '), move_cursor_down(1), move_cursor_left(6),
+    move_cursor_right(6), move_cursor_up(3).
 
-display_board_lines([], _).
-display_board_lines([Line|Rest], LineNumber) :- 
-    display_line(Line, LineNumber),
-    NewLineNumber is LineNumber - 1,
-    display_board_lines(Rest, NewLineNumber).
+draw_piece(Symbol) :-
+    tile_height(Height),
+    tile_width(Width),
+    CenterX is Width // 2,
+    CenterY is Height // 2,
+    move_cursor_left(CenterX),
+    move_cursor_down(CenterY),
+    write(Symbol),
+    move_cursor_right(CenterX - 1),
+    move_cursor_up(CenterY).
 
-display_board(board(Board, _Size)) :- 
-    
+display_piece(empty) :- draw_piece(' ').
+display_piece(white_piece) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('w').
+display_piece(white_king) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('+').
+display_piece(black_piece) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('b').
+display_piece(black_king) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('*').
+
+display_cell(Piece, Row, Col) :-
+    draw_cell(Row, Col),
+    display_piece(Piece).
+
+display_line([], _Row, _Cols).
+display_line([Cell|Rest], Row, Cols) :- 
+    display_cell(Cell, Row, Cols),
+    RestCols is Cols - 1,
+    display_line(Rest, Row, RestCols).
+
+display_board_aux([], _Rows, _Cols).
+display_board_aux([Line|Rest], Rows, Cols) :- 
+    display_line(Line, Rows, Cols),
+    tile_height(Height),
+    move_cursor_down(Height),
+    tile_width(Width),
+    move_cursor_left(Cols * Width),
+    RestRows is Rows - 1,
+    display_board_aux(Rest, RestRows, Cols).
+
+display_board(board(Board, Size)) :- 
     reverse(Board, RevBoard),
-    length(Board, TotalLines),
-    display_board_lines(RevBoard, TotalLines),
-    write('-----------------'), nl, 
-    write(' A B C D E F G H'), nl, nl.
+    display_board_aux(RevBoard, Size, Size),
+    nl.
 
 display_player(white) :- write('\tWhites\' turn').
 display_player(black) :- write('\tBlacks\' turn').   % Changing color according to the pieces would be nice :)
