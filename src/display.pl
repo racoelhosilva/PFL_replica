@@ -1,42 +1,33 @@
 :- use_module(library(lists)).
 
-read_number(X):-
-    read_number_aux(X, 0).
-
-read_number_aux(X, Acc):- 
-    get_code(C),
-    between(48, 57, C), !,
-    NextAcc is 10 * Acc + (C - 48),
-    read_number_aux(X, NextAcc).
-read_number_aux(X, X).
+:- include(input).
 
 get_option(Min, Max, Context, Value):-
     format('~a between ~d and ~d: ', [Context, Min, Max]),
-    read_number(Value),
-    between(Min, Max, Value), !,
-    write('\e\e[0J').
+    input_number(Value),
+    between(Min, Max, Value), !.
 get_option(Min, Max, Context, Value):-
-    skip_line,
-    write('Invalid option!\e[A\e[2K\r'),
+    write('Invalid option! '),
     get_option(Min, Max, Context, Value).
-
-get_line(Result, Acc):-
-    get_char(Char),
-    Char \= '\n',
-    append(Acc, [Char], Acc1),
-    get_line(Result, Acc1).
-get_line(Result, Acc):-
-    atom_chars(Result, Acc).
 
 get_name(Context, Player):-
     format('Name for ~a: ', [Context]),
-    get_line(Player, []).
+    input_string(Player).
+
+get_position(Position, Size):-
+    write('Choose the position of the piece to move: '),
+    input_position(Position, Size),
+    Position = Row-Col,
+    between(1, Size, Row),
+    between(1, Size, Col), !.
+get_position(Position, Size):-
+    write('Invalid position! '),
+    get_position(Position, Size).
 
 get_move(State, Move) :-
-    repeat,
-    get_option(1, 8, 'Row', Row),
-    get_option(1, 8, 'Column', Col),
-    Position = Row-Col,
+    state_board(State, Board),
+    size(Board, Size),
+    get_position(Position, Size),
     valid_piece_moves(State, Position, PieceMoves),
     length(PieceMoves, Length),
     Length > 0, !,
@@ -44,6 +35,9 @@ get_move(State, Move) :-
     get_option(1, Length, 'Move', Index),
     nth1(Index, PieceMoves, Move), !,
     write('You selected: '), write(Move), nl.
+get_move(State, Move) :-
+    write('No piece in that position can move! '),
+    get_move(State, Move).
 
 get_gamemode(GameMode):-
     write('Please select the game mode:'), nl,
@@ -82,24 +76,32 @@ display_options(4, [Name1, Difficulty1], [Name2, Difficulty2]) :-
     get_name('Computer 2', Name2),
     get_difficulty(Difficulty2).
 
-display_cell(empty) :- write(.).
-display_cell(white_piece) :- write(w).
-display_cell(white_king) :- write(+).
-display_cell(black_piece) :- write(b).
-display_cell(black_king) :- write(*).
+display_cell(empty) :- write('|'), write(.).
+display_cell(white_piece) :- write('|'), write(w).
+display_cell(white_king) :- write('|'), write(+).
+display_cell(black_piece) :- write('|'), write(b).
+display_cell(black_king) :- write('|'), write(*).
 
-display_line(Line) :- 
+display_line(Line, _LineNumber) :- 
+    write('-----------------'), nl,
     member(Cell, Line),
     display_cell(Cell),
     fail.
-display_line(_Line) :- nl.
+display_line(_Line, LineNumber) :- write('| '), write(LineNumber), nl.
+
+display_board_lines([], _).
+display_board_lines([Line|Rest], LineNumber) :- 
+    display_line(Line, LineNumber),
+    NewLineNumber is LineNumber - 1,
+    display_board_lines(Rest, NewLineNumber).
 
 display_board(board(Board, _Size)) :- 
+    
     reverse(Board, RevBoard),
-    member(Line, RevBoard),
-    display_line(Line),
-    fail.
-display_board(_Board).
+    length(Board, TotalLines),
+    display_board_lines(RevBoard, TotalLines),
+    write('-----------------'), nl, 
+    write(' A B C D E F G H'), nl, nl.
 
-display_player(white) :- write('Whites\' turn: '), nl.
-display_player(black) :- write('Blacks\' turn: '), nl.   % Changing color according to the pieces would be nice :)
+display_player(white) :- write('\tWhites\' turn').
+display_player(black) :- write('\tBlacks\' turn').   % Changing color according to the pieces would be nice :)

@@ -18,3 +18,11 @@ set_matrix_at(Matrix, Col-Row, Value, NewMatrix) :-
 
 % compare_keys(+Entry1, +Entry2)
 compare_keys(Key1-_, Key2-_) :- Key1 =< Key2.
+
+% max(+X, +Y, -Max)
+max(X, Y, X) :- X >= Y, !.
+max(_, Y, Y).
+
+% min(+X, +Y, -Min)
+min(X, Y, X) :- X =< Y, !.
+min(_, Y, Y).
