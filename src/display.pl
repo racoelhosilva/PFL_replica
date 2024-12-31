@@ -12,18 +12,38 @@ get_option(Min, Max, Context, Value):-
     write('Invalid option! '),
     get_option(Min, Max, Context, Value).
 
+get_option_game(Min, Max, Context, Value):-
+    move_cursor_up(2),
+    format('~a between ~d and ~d: ', [Context, Min, Max]),
+    restore_cursor,
+    input_number(Value),
+    between(Min, Max, Value), !.
+get_option_game(Min, Max, Context, Value):-
+    restore_cursor,
+    move_cursor_up(1),
+    write('Invalid option! '),
+    restore_cursor,
+    clear_to_end,
+    get_option_game(Min, Max, Context, Value).
+
 get_name(Context, Player):-
     format('Name for ~a: ', [Context]),
     input_string(Player).
 
 get_position(Position, Size):-
-    write('Choose the position of the piece to move: '),
+    move_cursor_up(2),
+    write('Position of the piece to move: '),
+    restore_cursor,
     input_position(Position, Size),
     Position = Row-Col,
     between(1, Size, Row),
     between(1, Size, Col), !.
 get_position(Position, Size):-
+    restore_cursor,
+    move_cursor_up(1),
     write('Invalid position! '),
+    restore_cursor,
+    clear_to_end,
     get_position(Position, Size).
 
 get_move(State, Move) :-
@@ -33,12 +53,18 @@ get_move(State, Move) :-
     valid_piece_moves(State, Position, PieceMoves),
     length(PieceMoves, Length),
     Length > 0, !,
-    write('Valid moves: '), write(PieceMoves),nl,
-    get_option(1, Length, 'Move', Index),
+    move_cursor(20, 80),
+    write('Valid moves: '), write(PieceMoves),
+    restore_cursor,
+    get_option_game(1, Length, 'Move', Index),
     nth1(Index, PieceMoves, Move), !,
     write('You selected: '), write(Move), nl.
 get_move(State, Move) :-
+    restore_cursor,
+    move_cursor_up(1),
     write('No piece in that position can move! '),
+    restore_cursor,
+    clear_to_end,
     get_move(State, Move).
 
 get_gamemode(GameMode):-
@@ -180,14 +206,25 @@ display_border_horizontal(Size) :-
     move_cursor_left(NewSize * Width).
 
 display_board(board(Board, Size)) :- 
+    move_cursor(10,4),
     display_border_horizontal(Size),
     reverse(Board, RevBoard),
     display_board_aux(RevBoard, Size, Size),
     display_border_horizontal(Size),
     nl.
 
-display_player(white) :- write('\tWhites\' turn').
-display_player(black) :- write('\tBlacks\' turn').   % Changing color according to the pieces would be nice :)
+display_player(white) :-
+    move_cursor(11, 80),
+    write('Whites\' turn'),
+    move_cursor(40, 80),
+    save_cursor.
+display_player(black) :- 
+    move_cursor(11, 80),
+    write('Blacks\' turn'),
+    move_cursor(40, 80),
+    save_cursor.
+    
+% Changing color according to the pieces would be nice :)
 
 display_title :-
     nl,
