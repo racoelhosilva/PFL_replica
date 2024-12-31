@@ -16,6 +16,10 @@ set_state_player(state(Board, _OldPlayer, KingEaten, GameConfig), Player, state(
 get_state_difficulty(state(_, white, _, [_, [_, Difficulty], _]), Difficulty).
 get_state_difficulty(state(_, black, _, [_, _, [_, Difficulty]]), Difficulty).
 
+% get_state_name(+State, -Name)
+get_state_name(state(_, white, _, [_, [Name, _], _]), Name).
+get_state_name(state(_, black, _, [_, _, [Name, _]]), Name).
+
 % king_eaten(+State, +KingEaten)
 king_eaten(state(_Board, _Player, KingEaten, _GameConfig), KingEaten).
 

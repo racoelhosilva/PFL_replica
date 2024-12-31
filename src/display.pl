@@ -16,6 +16,7 @@ get_option_game(Min, Max, Context, Value):-
     move_cursor_up(2),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
     restore_cursor,
+    write('> '),
     input_number(Value),
     between(Min, Max, Value), !.
 get_option_game(Min, Max, Context, Value):-
@@ -34,6 +35,7 @@ get_position(Position, Size):-
     move_cursor_up(2),
     write('Position of the piece to move: '),
     restore_cursor,
+    write('> '),
     input_position(Position, Size),
     Position = Row-Col,
     between(1, Size, Row),
@@ -213,18 +215,34 @@ display_board(board(Board, Size)) :-
     display_border_horizontal(Size),
     nl.
 
-display_player(white) :-
-    move_cursor(11, 80),
-    write('Whites\' turn'),
-    move_cursor(40, 80),
-    save_cursor.
-display_player(black) :- 
-    move_cursor(11, 80),
-    write('Blacks\' turn'),
-    move_cursor(40, 80),
-    save_cursor.
-    
-% Changing color according to the pieces would be nice :)
+display_winner(State, Winner) :-
+    get_right_coordinate(State, Right),
+    move_cursor(11, Right),
+    get_state_name(State, Name),
+    display_winner_aux(Name, Winner),
+    restore_cursor.
+
+display_winner_aux(Name, white) :- 
+    piece_white(Color), text_color_rgb(Color), bold,
+    clear_line, write(Name), write(' wins as white!').
+display_winner_aux(Name, black) :- 
+    piece_black(Color), text_color_rgb(Color), bold,
+    clear_line, write(Name), write(' wins as black!').
+
+display_player(State) :- 
+    get_right_coordinate(State, Right),
+    move_cursor(11, Right),
+    get_state_name(State, Name),
+    state_player(State, Player),
+    display_player_aux(Name, Player),
+    restore_cursor.
+
+display_player_aux(Name, white) :- 
+    piece_white(Color), text_color_rgb(Color), bold,
+    clear_line, write(Name), write(' to play as white!').
+display_player_aux(Name, black) :- 
+    piece_black(Color), text_color_rgb(Color), bold,
+    clear_line, write(Name), write(' to play as black!').
 
 display_title :-
     nl,
@@ -237,3 +255,17 @@ display_title :-
     format('~|~t~a~t~120+', '|   |  | ||   |___ |   |    |       ||   | |     |_ |   _   |'), nl,
     format('~|~t~a~t~120+', '|___|  |_||_______||___|    |_______||___| |_______||__| |__|'), nl,
     move_cursor(10, 1).
+
+get_right_coordinate(state(board(_Board, Size), _Player, _KingEaten, _GameConfig), Value) :-
+    tile_width(Width),
+    Value is (Size + 2) * Width + 10.
+
+get_bottom_coordinate(state(board(_Board, Size), _Player, _KingEaten, _GameConfig), Value) :-
+    tile_height(Height),
+    Value is (Size + 2) * Height + 13.
+
+save_input_position(State) :-
+    get_right_coordinate(State, Right),
+    get_bottom_coordinate(State, Bottom),
+    move_cursor(Bottom, Right),
+    save_cursor.

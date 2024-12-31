@@ -14,12 +14,14 @@ play :-
     clear_screen,
     initial_state(GameConfig, State),
     display_game(State),
+    save_input_position(State),
     game_loop(State), !.
 
 % game_loop(+State)
 game_loop(State) :-
     game_over(State, Winner), !,
-    write(Winner), reset, clear_to_end.
+    display_winner(State, Winner), 
+    reset, show_cursor.
 
 game_loop(State) :-
     get_state_difficulty(State, Difficulty),
@@ -46,14 +48,14 @@ initial_state(GameConfig, state(Board, white, none, GameConfig)) :- new_board(Bo
 % visualizations will be valued. Flexible game state representations and visualization predicates will
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
-display_game(state(Board, Player, KingEaten, GameConfig)) :-
+display_game(State) :-
     home, background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),
     hide_cursor,
     display_title,
+    state_board(State, Board),
     display_board(Board),
-    background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),
-    show_cursor,
-    display_player(Player).
+    background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),   
+    display_player(State).
     %State = state(Board, Player, KingEaten, GameConfig),
     %value(State, white, WhiteValue), value(State, black, BlackValue), 
     %nl, write(WhiteValue), write(' '), write(BlackValue), nl,
