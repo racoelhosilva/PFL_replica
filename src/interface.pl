@@ -1,4 +1,4 @@
-tile_width(6).
+tile_width(7).
 tile_height(3).
 
 background(color(34,36,36)).

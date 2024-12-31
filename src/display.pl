@@ -156,3 +156,7 @@ display_board(board(Board, Size)) :-
 
 display_player(white) :- write('\tWhites\' turn').
 display_player(black) :- write('\tBlacks\' turn').   % Changing color according to the pieces would be nice :)
+
+display_title :-
+    write(' ______    _______  _______  ___      ___   _______  _______ \n|    _ |  |       ||       ||   |    |   | |       ||   _   |\n|   | ||  |    ___||    _  ||   |    |   | |       ||  |_|  |\n|   |_||_ |   |___ |   |_| ||   |    |   | |       ||       |\n|    __  ||    ___||    ___||   |___ |   | |      _||       |\n|   |  | ||   |___ |   |    |       ||   | |     |_ |   _   |\n|___|  |_||_______||___|    |_______||___| |_______||__| |__|'), 
+    move_cursor(10, 1).
