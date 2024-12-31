@@ -15,7 +15,7 @@
     text_color_rgb/1,
     background_color_rgb/3,
     background_color_rgb/1,
-    move_cursor_home/0,
+    home/0,
     move_cursor/2,
     move_cursor_up/1,
     move_cursor_down/1,
@@ -62,7 +62,7 @@ background_color_rgb(R, G, B) :- format('\e[48;2;~d;~d;~dm', [R, G, B]).
 background_color_rgb(color(R, G, B)) :- format('\e[48;2;~d;~d;~dm', [R, G, B]).
 
 % Cursor Control
-move_cursor_home :- write('\e[H').
+home :- write('\e[H').
 move_cursor(Row, Col) :- format('\e[~d;~dH', [Row, Col]).
 move_cursor_up(N) :- format('\e[~dA', [N]).
 move_cursor_down(N) :- format('\e[~dB', [N]).
