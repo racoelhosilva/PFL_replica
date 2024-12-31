@@ -11,6 +11,7 @@ play :-
     home, background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),  clear_screen,
     display_title,
     display_menu(GameConfig),
+    clear_screen,
     initial_state(GameConfig, State),
     display_game(State),
     game_loop(State), !.

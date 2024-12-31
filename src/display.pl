@@ -141,22 +141,62 @@ display_line([Cell|Rest], Row, Cols) :-
 
 display_board_aux([], _Rows, _Cols).
 display_board_aux([Line|Rest], Rows, Cols) :- 
+    display_border_vertical(Rows),
     display_line(Line, Rows, Cols),
+    display_border_vertical(Rows),
     tile_height(Height),
     move_cursor_down(Height),
     tile_width(Width),
-    move_cursor_left(Cols * Width),
+    NewCols is Cols + 2,
+    move_cursor_left(NewCols * Width),
     RestRows is Rows - 1,
     display_board_aux(Rest, RestRows, Cols).
 
+display_border_vertical(Row) :- 
+    border_background(BackgroundColor), background_color_rgb(BackgroundColor),
+    border_text(TextColor), text_color_rgb(TextColor), bold,
+    put_cell,
+    draw_piece(Row).
+
+display_border_horizontal_aux(Width, Width).
+display_border_horizontal_aux(Width, Col) :- 
+    put_cell,
+    Value is 65 + Col,
+    char_code(AlphaCol, Value),
+    draw_piece(AlphaCol),
+    Col1 is Col + 1,
+    display_border_horizontal_aux(Width, Col1).
+
+display_border_horizontal(Size) :- 
+    border_background(BackgroundColor), background_color_rgb(BackgroundColor),
+    border_text(TextColor), text_color_rgb(TextColor), bold,
+    put_cell,
+    display_border_horizontal_aux(Size, 0),
+    put_cell,
+    tile_height(Height),
+    move_cursor_down(Height),
+    tile_width(Width),
+    NewSize is Size + 2, 
+    move_cursor_left(NewSize * Width).
+
 display_board(board(Board, Size)) :- 
+    display_border_horizontal(Size),
     reverse(Board, RevBoard),
     display_board_aux(RevBoard, Size, Size),
+    display_border_horizontal(Size),
     nl.
 
 display_player(white) :- write('\tWhites\' turn').
 display_player(black) :- write('\tBlacks\' turn').   % Changing color according to the pieces would be nice :)
 
 display_title :-
-    write(' ______    _______  _______  ___      ___   _______  _______ \n|    _ |  |       ||       ||   |    |   | |       ||   _   |\n|   | ||  |    ___||    _  ||   |    |   | |       ||  |_|  |\n|   |_||_ |   |___ |   |_| ||   |    |   | |       ||       |\n|    __  ||    ___||    ___||   |___ |   | |      _||       |\n|   |  | ||   |___ |   |    |       ||   | |     |_ |   _   |\n|___|  |_||_______||___|    |_______||___| |_______||__| |__|'), 
+    nl,
+    logo_color(Color), text_color_rgb(Color), bold,
+    format('~|~t~a~t~120+', ' ______    _______  _______  ___      ___   _______  _______ '), nl,
+    format('~|~t~a~t~120+', '|    _ |  |       ||       ||   |    |   | |       ||   _   |'), nl,
+    format('~|~t~a~t~120+', '|   | ||  |    ___||    _  ||   |    |   | |       ||  |_|  |'), nl,
+    format('~|~t~a~t~120+', '|   |_||_ |   |___ |   |_| ||   |    |   | |       ||       |'), nl,
+    format('~|~t~a~t~120+', '|    __  ||    ___||    ___||   |___ |   | |      _||       |'), nl,
+    format('~|~t~a~t~120+', '|   |  | ||   |___ |   |    |       ||   | |     |_ |   _   |'), nl,
+    format('~|~t~a~t~120+', '|___|  |_||_______||___|    |_______||___| |_______||__| |__|'), nl,
     move_cursor(10, 1).
