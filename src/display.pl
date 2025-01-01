@@ -92,16 +92,16 @@ display_valid_moves_aux([Move|Rest], Length, Index) :-
     Index1 is Index + 1,
     display_valid_moves_aux(Rest, Length, Index1).
 
-display_valid_move(step(Row-Col, vertical)) :- 
+display_valid_move(step(_Position, vertical)) :- 
     vertical_color(Color), text_color_rgb(Color),
     write('Vertical Step').
-display_valid_move(step(Row-Col, horizontal)) :-
+display_valid_move(step(_Position, horizontal)) :-
     horizontal_color(Color), text_color_rgb(Color),
     write('Horizontal Step').
-display_valid_move(step(Row-Col, diagonal)) :-
+display_valid_move(step(_Position, diagonal)) :-
     diagonal_color(Color), text_color_rgb(Color),
     write('Diagonal Step').
-display_valid_move(transform(Row-Col)) :-
+display_valid_move(transform(_Position)) :-
     transform_color(Color), text_color_rgb(Color),
     write('Transform').
 
@@ -295,7 +295,7 @@ display_board(board(Board, Size)) :-
 display_winner(State, Winner) :-
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
-    get_state_name(State, Name),
+    get_state_name(State, Winner, Name),
     display_winner_aux(Name, Winner),
     restore_cursor.
 
@@ -309,8 +309,8 @@ display_winner_aux(Name, black) :-
 display_player(State) :- 
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
-    get_state_name(State, Name),
     state_player(State, Player),
+    get_state_name(State, Player, Name),
     display_player_aux(Name, Player),
     restore_cursor.
 
