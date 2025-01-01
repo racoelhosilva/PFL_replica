@@ -130,6 +130,7 @@ get_move(State, Move) :-
     clear_game_info(Length, -6).
 get_move(State, Move) :-
     restore_cursor,
+    error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
     write('No piece in that position can move! '),
     restore_cursor,
@@ -210,12 +211,12 @@ put_cell :-
 draw_cell(Row, Col) :-
     Sum is Row + Col,
     Sum mod 2 =:= 0,
-    background_color_rgb(255,255,255),
+    board_white(Color), background_color_rgb(Color),
     put_cell.
 draw_cell(Row, Col) :-
     Sum is Row + Col,
     Sum mod 2 =:= 1,
-    background_color_rgb(0,0,0),
+    board_black(Color), background_color_rgb(Color),
     put_cell.
 
 draw_piece(Symbol) :-
@@ -331,23 +332,65 @@ display_value(State, Value) :-
     value_color(Color), text_color_rgb(Color), bold,
     format('~|~tBoard Evaluation: ~8F~t~*+', [Value, NewRight]).
 
+put_move(step(Row-Col, vertical)) :- 
+    vertical_color(Color), text_color_rgb(Color), reset_bold,
+    Value is 64 + Col, char_code(AlphaCol, Value),
+    write(AlphaCol), write(Row), write('|').
+put_move(step(Row-Col, horizontal)) :- 
+    horizontal_color(Color), text_color_rgb(Color), reset_bold,
+    Value is 64 + Col, char_code(AlphaCol, Value),
+    write(AlphaCol), write(Row), write('-').
+put_move(step(Row-Col, diagonal)) :- 
+    diagonal_color(Color), text_color_rgb(Color), reset_bold,
+    Value is 64 + Col, char_code(AlphaCol, Value),
+    write(AlphaCol), write(Row), write('/').
+put_move(transform(Row-Col)) :- 
+    transform_color(Color), text_color_rgb(Color), reset_bold,
+    Value is 64 + Col, char_code(AlphaCol, Value),
+    write(AlphaCol), write(Row), write('x').
+
+draw_move(white, Move, CurrentMove) :-
+    notation_color(Color), text_color_rgb(Color), bold,
+    format('~|~d.~t~3+ ', [CurrentMove]),
+    put_move(Move).
+draw_move(black, Move, _CurrentMove) :-
+    move_cursor_right(8),
+    put_move(Move).
+
+display_move(State, Move) :-
+    get_state_move(State, CurrentMove),
+    get_right_coordinate(State, Right),
+    get_bottom_coordinate(State, Bottom),
+    VerticalBound is Bottom - 13 - 12,
+    Row1 is CurrentMove // 2,
+    CurrentRow is Row1 mod VerticalBound,
+    CurrentCol is Right + (Row1 // VerticalBound) * 14,
+    Row is 13 + CurrentRow,
+    move_cursor(Row, CurrentCol),
+    state_player(State, Player),
+    CurrentTurn is Row1 + 1,
+    draw_move(Player, Move, CurrentTurn),
+    restore_cursor.
+
 display_title :-
     nl,
     logo_color(Color), text_color_rgb(Color), bold,
     format('~|~t~a~t~120+', ' ______    _______  _______  ___      ___   _______  _______ '), nl,
     format('~|~t~a~t~120+', '|    _ |  |       ||       ||   |    |   | |       ||   _   |'), nl,
-    format('~|~t~a~t~120+', '|   | ||  |    ___||    _  ||   |    |   | |       ||  |_|  |'), nl,
-    format('~|~t~a~t~120+', '|   |_||_ |   |___ |   |_| ||   |    |   | |       ||       |'), nl,
-    format('~|~t~a~t~120+', '|    __  ||    ___||    ___||   |___ |   | |      _||       |'), nl,
+    format('~|~t~a~t~120+', '|   | ||  |    ___||    _  ||   |    |   | |      _||  |_|  |'), nl,
+    format('~|~t~a~t~120+', '|   |_||_ |   |___ |   |_| ||   |    |   | |     |  |       |'), nl,
+    format('~|~t~a~t~120+', '|    __  ||    ___||    ___||   |___ |   | |     |  |       |'), nl,
     format('~|~t~a~t~120+', '|   |  | ||   |___ |   |    |       ||   | |     |_ |   _   |'), nl,
     format('~|~t~a~t~120+', '|___|  |_||_______||___|    |_______||___| |_______||__| |__|'), nl,
     move_cursor(10, 1).
 
-get_right_coordinate(state(board(_Board, Size), _Player, _KingEaten, _GameConfig), Value) :-
+get_right_coordinate(State, Value) :-
+    state_board(State, board(_Board, Size)),
     tile_width(Width),
     Value is (Size + 2) * Width + 10.
 
-get_bottom_coordinate(state(board(_Board, Size), _Player, _KingEaten, _GameConfig), Value) :-
+get_bottom_coordinate(State, Value) :-
+    state_board(State, board(_Board, Size)),
     tile_height(Height),
     Value is (Size + 2) * Height + 13.
 

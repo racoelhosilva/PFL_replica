@@ -28,6 +28,7 @@ game_loop(State) :-
     choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
     display_game(IntState),
+    display_move(State, Move),
     sleep(1),
     game_loop(IntState).
 
@@ -39,7 +40,7 @@ game_loop(State) :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(GameConfig, state(Board, white, none, GameConfig)) :- new_board(Board).
+initial_state(GameConfig, state(Board, white, none, GameConfig, 0)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -65,7 +66,8 @@ display_game(State) :-
 % returns the new game state after the move is executed.
 move(GameState, Move, NewGameState) :-
     execute_move(GameState, Move, IntermediateGameState),
-    switch_player(IntermediateGameState, NewGameState).
+    switch_player(IntermediateGameState, IntermediateGameState2),
+    increase_state_move(IntermediateGameState2, NewGameState).
 
 % valid_moves(+GameState, -ListOfMoves)
 % This predicate receives the current game state, and

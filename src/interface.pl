@@ -22,6 +22,8 @@ error_color(color(255, 0, 0)).
 prompt_color(color(163, 177, 138)).
 input_color(color(218, 215, 205)).
 
+notation_color(color(255, 255, 255)).
+
 vertical_color(color(231, 111, 81)).
 diagonal_color(color(233, 196, 106)).
 horizontal_color(color(42, 157, 143)).

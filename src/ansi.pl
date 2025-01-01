@@ -2,12 +2,19 @@
     reset/0,
     bold/0,
     faint/0,
-    italic/0,
-    underline/0,
-    blink/0,
-    invert/0,
-    hidden/0,
     reset_bold/0,
+    italic/0,
+    reset_italic/0,
+    underline/0,
+    reset_underline/0,
+    blink/0,
+    reset_blink/0,
+    invert/0,
+    reset_invert/0,
+    hidden/0,
+    reset_hidden/0,
+    strikethrough/0,
+    reset_strikethrough/0,
     text_color/1,
     background_color/1,
     text_color_indexed/1,
@@ -40,12 +47,19 @@
 reset :- write('\e[0m').
 bold :- write('\e[1m').
 faint :- write('\e[2m').
-italic :- write('\e[3m').
-underline :- write('\e[4m').
-blink :- write('\e[5m').
-invert :- write('\e[7m').
-hidden :- write('\e[8m').
 reset_bold :- write('\e[22m').
+italic :- write('\e[3m').
+reset_italic :- write('\e[23m').
+underline :- write('\e[4m').
+reset_underline :- write('\e[24m').
+blink :- write('\e[5m').
+reset_blink :- write('\e[25m').
+invert :- write('\e[7m').
+reset_invert :- write('\e[27m').
+hidden :- write('\e[8m').
+reset_hidden :- write('\e[28m').
+strikethrough :- write('\e[9m').
+reset_strikethrough :- write('\e[29m').
 
 % Colors
 text_color(Color) :- ansi_color_seq(Color, text).
