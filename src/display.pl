@@ -11,9 +11,9 @@ get_option(Min, Max, Context, Value):-
     input_number(Value),
     between(Min, Max, Value), !,
     restore_cursor,
-    clear_to_end, write(Context), write(' '), write(Value), write(' selected!'),
+    clear_line, write(Context), write(' '), write(Value), write(' selected!'),
     restore_cursor,
-    move_cursor_down(1), clear_to_end.
+    move_cursor_down(1), clear_line.
 get_option(Min, Max, Context, Value):-
     restore_cursor,
     error_color(ErrorColor), text_color_rgb(ErrorColor),
@@ -23,7 +23,7 @@ get_option(Min, Max, Context, Value):-
     get_option(Min, Max, Context, Value).
 
 get_option_game(Min, Max, Context, Value):-
-    move_cursor_up(2), clear_to_end,
+    move_cursor_up(2), clear_line,
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
     restore_cursor,
@@ -33,14 +33,14 @@ get_option_game(Min, Max, Context, Value):-
     input_number(Value),
     between(Min, Max, Value), !,
     restore_cursor,
-    move_cursor_up(1), clear_to_end.
+    move_cursor_up(1), clear_line.
 get_option_game(Min, Max, Context, Value):-
     restore_cursor,
     error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
     write('Invalid option! '),
     restore_cursor,
-    clear_to_end,
+    clear_line,
     get_option_game(Min, Max, Context, Value).
 
 get_name(Context, Player):-
@@ -50,7 +50,7 @@ get_name(Context, Player):-
     input_string(Player).
 
 get_position(Position, Size):-
-    move_cursor_up(2), clear_to_end,
+    move_cursor_up(2), clear_line,
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('Position of the piece to move: '),
     restore_cursor,
@@ -62,14 +62,14 @@ get_position(Position, Size):-
     between(1, Size, Row),
     between(1, Size, Col), !,
     restore_cursor,
-    move_cursor_up(1), clear_to_end.
+    move_cursor_up(1), clear_line.
 get_position(Position, Size):-
     restore_cursor,
     error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
     write('Invalid position! '),
     restore_cursor,
-    clear_to_end,
+    clear_line,
     get_position(Position, Size).
 
 display_valid_moves(Moves) :-
@@ -107,12 +107,13 @@ display_valid_move(transform(_Position)) :-
 
 clear_game_info(Length, Length).
 clear_game_info(Length, Cur) :-
-    clear_to_end,
+    clear_line,
     move_cursor_up(1),
     Cur1 is Cur + 1,
     clear_game_info(Length, Cur1).
 
 get_move(State, Move) :-
+    restore_cursor,
     state_board(State, Board),
     size(Board, Size),
     get_position(Position, Size),
@@ -132,7 +133,7 @@ get_move(State, Move) :-
     move_cursor_up(1),
     write('No piece in that position can move! '),
     restore_cursor,
-    clear_to_end,
+    clear_line,
     get_move(State, Move).
 
 get_gamemode(GameMode):-
@@ -320,6 +321,15 @@ display_player_aux(Name, white) :-
 display_player_aux(Name, black) :- 
     piece_black(Color), text_color_rgb(Color), bold,
     clear_line, write(Name), write(' to play as black!').
+
+display_value(State, Value) :- 
+    get_right_coordinate(State, Right),
+    get_bottom_coordinate(State, Bottom),
+    NewBottom is Bottom - 1,
+    move_cursor(NewBottom, 1),
+    NewRight is Right - 3,
+    value_color(Color), text_color_rgb(Color), bold,
+    format('~|~tBoard Evaluation: ~8F~t~*+', [Value, NewRight]).
 
 display_title :-
     nl,

@@ -55,10 +55,9 @@ display_game(State) :-
     state_board(State, Board),
     display_board(Board),
     background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),   
-    display_player(State).
-    %State = state(Board, Player, KingEaten, GameConfig),
-    %value(State, white, WhiteValue), value(State, black, BlackValue), 
-    %nl, write(WhiteValue), write(' '), write(BlackValue), nl,
+    display_player(State),
+    value(State, white, Value),
+    display_value(State, Value).
 
 % move(+GameState, +Move, -NewGameState)
 % This predicate is responsible for move validation and

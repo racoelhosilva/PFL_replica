@@ -26,3 +26,5 @@ vertical_color(color(231, 111, 81)).
 diagonal_color(color(233, 196, 106)).
 horizontal_color(color(42, 157, 143)).
 transform_color(color(206, 106, 133)).
+
+value_color(color(250, 162, 117)).
