@@ -48,6 +48,22 @@ get_position(Position, Size):-
     clear_to_end,
     get_position(Position, Size).
 
+display_valid_moves(Moves) :-
+    length(Moves, Length),
+    Shift is Length + 5,
+    move_cursor_up(Shift),
+    write('Valid moves:'),
+    display_valid_moves_aux(Moves, Length, 1).
+
+display_valid_moves_aux([], _, _).
+display_valid_moves_aux([Move|Rest], Length, Index) :-
+    restore_cursor,
+    Shift is Length + 4 - Index,
+    move_cursor_up(Shift),
+    write(Index), write('. '), write(Move),
+    Index1 is Index + 1,
+    display_valid_moves_aux(Rest, Length, Index1).
+
 get_move(State, Move) :-
     state_board(State, Board),
     size(Board, Size),
@@ -55,8 +71,8 @@ get_move(State, Move) :-
     valid_piece_moves(State, Position, PieceMoves),
     length(PieceMoves, Length),
     Length > 0, !,
-    move_cursor(20, 80),
-    write('Valid moves: '), write(PieceMoves),
+    restore_cursor,
+    display_valid_moves(PieceMoves),
     restore_cursor,
     get_option_game(1, Length, 'Move', Index),
     nth1(Index, PieceMoves, Move), !,

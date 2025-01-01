@@ -8,13 +8,13 @@
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
-    home, background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),  clear_screen,
+    home, background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT), clear_screen,
     display_title,
     display_menu(GameConfig),
     clear_screen,
     initial_state(GameConfig, State),
-    display_game(State),
     save_input_position(State),
+    display_game(State),
     game_loop(State), !.
 
 % game_loop(+State)
