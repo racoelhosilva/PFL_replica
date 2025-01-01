@@ -5,11 +5,21 @@
 :- include(interface).
 
 get_option(Min, Max, Context, Value):-
+    prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
+    input_color(InputColor), text_color_rgb(InputColor),
     input_number(Value),
-    between(Min, Max, Value), !.
+    between(Min, Max, Value), !,
+    restore_cursor,
+    clear_to_end, write(Context), write(' '), write(Value), write(' selected!'),
+    restore_cursor,
+    move_cursor_down(1), clear_to_end.
 get_option(Min, Max, Context, Value):-
-    write('Invalid option! '),
+    restore_cursor,
+    error_color(ErrorColor), text_color_rgb(ErrorColor),
+    move_cursor_down(1),
+    write('Invalid option!'),
+    restore_cursor,
     get_option(Min, Max, Context, Value).
 
 get_option_game(Min, Max, Context, Value):-
@@ -28,7 +38,9 @@ get_option_game(Min, Max, Context, Value):-
     get_option_game(Min, Max, Context, Value).
 
 get_name(Context, Player):-
-    format('Name for ~a: ', [Context]),
+    prompt_color(PromptColor), text_color_rgb(PromptColor),
+    format('    Name for ~a: ', [Context]),
+    input_color(InputColor), text_color_rgb(InputColor),
     input_string(Player).
 
 get_position(Position, Size):-
@@ -75,8 +87,7 @@ get_move(State, Move) :-
     display_valid_moves(PieceMoves),
     restore_cursor,
     get_option_game(1, Length, 'Move', Index),
-    nth1(Index, PieceMoves, Move), !,
-    write('You selected: '), write(Move), nl.
+    nth1(Index, PieceMoves, Move), !.
 get_move(State, Move) :-
     restore_cursor,
     move_cursor_up(1),
@@ -86,21 +97,34 @@ get_move(State, Move) :-
     get_move(State, Move).
 
 get_gamemode(GameMode):-
-    write('Please select the game mode:'), nl,
-    write('\t1. Human vs. Human'), nl,
-    write('\t2. Human vs. Computer'), nl,
-    write('\t3. Computer vs. Human'), nl,
-    write('\t4. Computer vs. Computer'), nl,
-    get_option(1, 4, 'Game mode', GameMode).
+    write('    Please select the game mode:'), nl,
+    reset, 
+    menu_options_color(OptionsColor), text_color_rgb(OptionsColor), 
+    background(BackgroundColor), background_color_rgb(BackgroundColor),
+    write('      1. Human vs. Human'), nl,
+    write('      2. Human vs. Computer'), nl,
+    write('      3. Computer vs. Human'), nl,
+    write('      4. Computer vs. Computer'), nl,
+    write('    '),
+    save_cursor,
+    get_option(1, 4, 'Game mode', GameMode), nl.
 
 get_difficulty(Difficulty):-
-    write('Please select the difficulty level:'), nl,
-    write('\t1. Random'), nl,
-    write('\t2. Greedy'), nl,
-    get_option(1, 2, 'Difficulty level', Difficulty).
+    menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
+    write('    Please select the difficulty level:'), nl,
+    reset,
+    menu_options_color(OptionsColor), text_color_rgb(OptionsColor),
+    background(BackgroundColor), background_color_rgb(BackgroundColor),
+    write('      1. Random'), nl,
+    write('      2. Greedy'), nl,
+    write('    '),
+    save_cursor,
+    get_option(1, 2, 'Difficulty level', Difficulty), nl.
 
 display_menu(GameConfig) :- 
-    write('Welcome to Replica!'), nl,
+    background(BackgroundColor), background_color_rgb(BackgroundColor),
+    menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
+    format('~|~t~a~t~120+', 'Welcome to Replica!'), nl, nl,
     get_gamemode(GameMode),
     display_options(GameMode, Player1, Player2), !,
     GameConfig = [GameMode, Player1, Player2].
@@ -168,9 +192,9 @@ draw_piece(Symbol) :-
     move_cursor_up(CenterY).
 
 display_piece(empty) :- draw_piece(' ').
-display_piece(white_piece) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('w').
+display_piece(white_piece) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('W').
 display_piece(white_king) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('+').
-display_piece(black_piece) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('b').
+display_piece(black_piece) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('B').
 display_piece(black_king) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('*').
 
 display_cell(Piece, Row, Col) :-
