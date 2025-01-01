@@ -8,7 +8,7 @@
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
-    home, background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT), clear_screen,
+    home, background(BG), background_color_rgb(BG), clear_screen,
     display_title,
     display_menu(GameConfig),
     clear_screen,
@@ -50,12 +50,12 @@ initial_state(GameConfig, state(Board, white, none, GameConfig, 0)) :- new_board
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
 display_game(State) :-
-    home, background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),
+    home, background(BG), background_color_rgb(BG),
     hide_cursor,
     display_title,
     state_board(State, Board),
     display_board(Board),
-    background(BG), background_color_rgb(BG), text(TEXT), text_color_rgb(TEXT),   
+    background(BG), background_color_rgb(BG),
     display_player(State),
     value(State, white, Value),
     display_value(State, Value).
