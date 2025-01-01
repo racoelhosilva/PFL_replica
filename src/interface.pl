@@ -21,3 +21,8 @@ menu_options_color(color(58, 90, 64)).
 error_color(color(255, 0, 0)).
 prompt_color(color(163, 177, 138)).
 input_color(color(218, 215, 205)).
+
+vertical_color(color(231, 111, 81)).
+diagonal_color(color(233, 196, 106)).
+horizontal_color(color(42, 157, 143)).
+transform_color(color(206, 106, 133)).

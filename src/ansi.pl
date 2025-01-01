@@ -7,6 +7,7 @@
     blink/0,
     invert/0,
     hidden/0,
+    reset_bold/0,
     text_color/1,
     background_color/1,
     text_color_indexed/1,
@@ -44,6 +45,7 @@ underline :- write('\e[4m').
 blink :- write('\e[5m').
 invert :- write('\e[7m').
 hidden :- write('\e[8m').
+reset_bold :- write('\e[22m').
 
 % Colors
 text_color(Color) :- ansi_color_seq(Color, text).

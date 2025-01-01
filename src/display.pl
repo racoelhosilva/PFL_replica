@@ -23,14 +23,20 @@ get_option(Min, Max, Context, Value):-
     get_option(Min, Max, Context, Value).
 
 get_option_game(Min, Max, Context, Value):-
-    move_cursor_up(2),
+    move_cursor_up(2), clear_to_end,
+    prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
     restore_cursor,
+    prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('> '),
+    input_color(InputColor), text_color_rgb(InputColor),
     input_number(Value),
-    between(Min, Max, Value), !.
+    between(Min, Max, Value), !,
+    restore_cursor,
+    move_cursor_up(1), clear_to_end.
 get_option_game(Min, Max, Context, Value):-
     restore_cursor,
+    error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
     write('Invalid option! '),
     restore_cursor,
@@ -44,16 +50,22 @@ get_name(Context, Player):-
     input_string(Player).
 
 get_position(Position, Size):-
-    move_cursor_up(2),
+    move_cursor_up(2), clear_to_end,
+    prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('Position of the piece to move: '),
     restore_cursor,
+    prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('> '),
+    input_color(InputColor), text_color_rgb(InputColor),
     input_position(Position, Size),
     Position = Row-Col,
     between(1, Size, Row),
-    between(1, Size, Col), !.
+    between(1, Size, Col), !,
+    restore_cursor,
+    move_cursor_up(1), clear_to_end.
 get_position(Position, Size):-
     restore_cursor,
+    error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
     write('Invalid position! '),
     restore_cursor,
@@ -64,7 +76,9 @@ display_valid_moves(Moves) :-
     length(Moves, Length),
     Shift is Length + 5,
     move_cursor_up(Shift),
+    menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
     write('Valid moves:'),
+    reset_bold,
     display_valid_moves_aux(Moves, Length, 1).
 
 display_valid_moves_aux([], _, _).
@@ -72,9 +86,31 @@ display_valid_moves_aux([Move|Rest], Length, Index) :-
     restore_cursor,
     Shift is Length + 4 - Index,
     move_cursor_up(Shift),
-    write(Index), write('. '), write(Move),
+    menu_options_color(OptionsColor), text_color_rgb(OptionsColor),
+    write(Index), write('. '),
+    display_valid_move(Move),
     Index1 is Index + 1,
     display_valid_moves_aux(Rest, Length, Index1).
+
+display_valid_move(step(Row-Col, vertical)) :- 
+    vertical_color(Color), text_color_rgb(Color),
+    write('Vertical Step').
+display_valid_move(step(Row-Col, horizontal)) :-
+    horizontal_color(Color), text_color_rgb(Color),
+    write('Horizontal Step').
+display_valid_move(step(Row-Col, diagonal)) :-
+    diagonal_color(Color), text_color_rgb(Color),
+    write('Diagonal Step').
+display_valid_move(transform(Row-Col)) :-
+    transform_color(Color), text_color_rgb(Color),
+    write('Transform').
+
+clear_game_info(Length, Length).
+clear_game_info(Length, Cur) :-
+    clear_to_end,
+    move_cursor_up(1),
+    Cur1 is Cur + 1,
+    clear_game_info(Length, Cur1).
 
 get_move(State, Move) :-
     state_board(State, Board),
@@ -87,7 +123,10 @@ get_move(State, Move) :-
     display_valid_moves(PieceMoves),
     restore_cursor,
     get_option_game(1, Length, 'Move', Index),
-    nth1(Index, PieceMoves, Move), !.
+    nth1(Index, PieceMoves, Move), !,
+    restore_cursor,
+    length(PieceMoves, Length),
+    clear_game_info(Length, -6).
 get_move(State, Move) :-
     restore_cursor,
     move_cursor_up(1),
@@ -98,9 +137,8 @@ get_move(State, Move) :-
 
 get_gamemode(GameMode):-
     write('    Please select the game mode:'), nl,
-    reset, 
+    reset_bold, 
     menu_options_color(OptionsColor), text_color_rgb(OptionsColor), 
-    background(BackgroundColor), background_color_rgb(BackgroundColor),
     write('      1. Human vs. Human'), nl,
     write('      2. Human vs. Computer'), nl,
     write('      3. Computer vs. Human'), nl,
@@ -112,9 +150,8 @@ get_gamemode(GameMode):-
 get_difficulty(Difficulty):-
     menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
     write('    Please select the difficulty level:'), nl,
-    reset,
+    reset_bold,
     menu_options_color(OptionsColor), text_color_rgb(OptionsColor),
-    background(BackgroundColor), background_color_rgb(BackgroundColor),
     write('      1. Random'), nl,
     write('      2. Greedy'), nl,
     write('    '),
