@@ -160,26 +160,25 @@ get_difficulty(Difficulty):-
     save_cursor,
     get_option(1, 2, 'Difficulty level', Difficulty), nl.
 
-display_menu(GameConfig) :- 
+display_menu(game_config(GameMode, Player1, Player2)) :- 
     background(BackgroundColor), background_color_rgb(BackgroundColor),
     menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
     format('~|~t~a~t~120+', 'Welcome to Replica!'), nl, nl,
     get_gamemode(GameMode),
-    display_options(GameMode, Player1, Player2), !,
-    GameConfig = [GameMode, Player1, Player2].
+    display_options(GameMode, Player1, Player2), !.
 
-display_options(1, [Name1, 0], [Name2, 0]) :-
+display_options(1, player_info(Name1, 0), player_info(Name2, 0)) :-
     get_name('Player 1', Name1),
     get_name('Player 2', Name2).
-display_options(2, [Name1, 0], [Name2, Difficulty]) :-
+display_options(2, player_info(Name1, 0), player_info(Name2, Difficulty)) :-
     get_name('Player 1', Name1),
     get_name('Computer', Name2),
     get_difficulty(Difficulty).
-display_options(3, [Name1, Difficulty], [Name2, 0]) :-
+display_options(3, player_info(Name1, Difficulty), player_info(Name2, 0)) :-
     get_name('Computer', Name1),
     get_difficulty(Difficulty),
     get_name('Player 2', Name2).
-display_options(4, [Name1, Difficulty1], [Name2, Difficulty2]) :-
+display_options(4, player_info(Name1, Difficulty1), player_info(Name2, Difficulty2)) :-
     get_name('Computer 1', Name1),
     get_difficulty(Difficulty1),
     get_name('Computer 2', Name2),
