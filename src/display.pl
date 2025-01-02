@@ -227,11 +227,30 @@ draw_piece(Symbol) :-
     move_cursor_right(CenterX - 1),
     move_cursor_up(CenterY).
 
+draw_wide_piece(WideSymbol) :-
+    tile_height(Height),
+    tile_width(Width),
+    CenterX is (Width // 2) + 1,
+    CenterY is (Height-1) // 2,
+    move_cursor_left(CenterX + 1),
+    move_cursor_down(CenterY),
+    write(WideSymbol),
+    move_cursor_right(CenterX - 2),
+    move_cursor_up(CenterY).
+
 display_piece(empty) :- draw_piece(' ').
-display_piece(white_piece) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('W').
-display_piece(white_king) :- piece_white(Color), text_color_rgb(Color), bold, draw_piece('+').
-display_piece(black_piece) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('B').
-display_piece(black_king) :- piece_black(Color), text_color_rgb(Color), bold, draw_piece('*').
+display_piece(white_piece) :- 
+    piece_white(Color), text_color_rgb(Color), bold, 
+    white_pawn_symbol(Symbol), draw_piece(Symbol).
+display_piece(white_king) :- 
+    piece_white(Color), text_color_rgb(Color), bold, 
+    white_king_symbol(Symbol), draw_wide_piece(Symbol).
+display_piece(black_piece) :- 
+    piece_black(Color), text_color_rgb(Color), bold, 
+    black_pawn_symbol(Symbol), draw_piece(Symbol).
+display_piece(black_king) :- 
+    piece_black(Color), text_color_rgb(Color), bold, 
+    black_king_symbol(Symbol), draw_wide_piece(Symbol).
 
 display_cell(Piece, Row, Col) :-
     draw_cell(Row, Col),

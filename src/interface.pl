@@ -35,8 +35,16 @@ board_black(color(0,0,0)).
 % Color of the "white" pieces on the board
 piece_white(color(255,0,0)).
 
+% Symbols of the "white" pieces
+white_pawn_symbol('W').
+white_king_symbol('*W*').
+
 % Color of the "black" pieces on the board
 piece_black(color(0,255,0)).
+
+% Symbols of the "black" pieces
+black_pawn_symbol('B').
+black_king_symbol('+B+').
 
 % Color of the border of the board
 border_background(color(59, 27, 4)).
