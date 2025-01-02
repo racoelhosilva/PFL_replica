@@ -51,7 +51,7 @@ input_position(Position, Size):-
 % Auxiliar function to read a position from input
 % Stops at line feed and skips unwanted characters
 input_position_aux(Position, Row, Col, Size):-
-    (Col = 0 ; Size > 26),
+    col_or_size_condition(Col, Size),
     peek_code(Code),
     UpperBoundCalc is 65 + Size - 1,
     min(UpperBoundCalc, 90, UpperBound),
@@ -60,7 +60,7 @@ input_position_aux(Position, Row, Col, Size):-
     NewCol is Col * 26 + (Code - 64),
     input_position_aux(Position, Row, NewCol, Size).
 input_position_aux(Position, Row, Col, Size):-
-    (Col = 0 ; Size > 26),
+    col_or_size_condition(Col, Size),
     peek_code(Code),
     UpperBoundCalc is 97 + Size - 1,
     min(UpperBoundCalc, 122, UpperBound),
@@ -69,7 +69,7 @@ input_position_aux(Position, Row, Col, Size):-
     NewCol is Col * 26 + (Code - 96),
     input_position_aux(Position, Row, NewCol, Size).
 input_position_aux(Position, Row, Col, Size):-
-    (Row = 0 ; Size > 10),
+    row_or_size_condition(Row, Size),
     peek_code(Code),
     UpperBoundCalc is 49 + Size - 1,
     min(UpperBoundCalc, 57, UpperBound),
@@ -82,3 +82,13 @@ input_position_aux(Col-Row, Row, Col, _Size):-
 input_position_aux(Position, Row, Col, Size):-
     get_code(_),
     input_position_aux(Position, Row, Col, Size).
+
+% col_or_size_condition(+Col, +Size)
+% Check if should read more column input
+col_or_size_condition(0, Size).
+col_or_size_condition(_Col, Size) :- Size > 26.
+
+% row_or_size_condition(+Row, +Size)
+% Check if should read more row input
+row_or_size_condition(0, Size).
+row_or_size_condition(_Row, Size) :- Size > 10.
