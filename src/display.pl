@@ -186,13 +186,13 @@ display_options(4, player_info(Name1, Difficulty1), player_info(Name2, Difficult
 
 put_cell_pixel :- write(' ').
 
-put_cell_line(_Height, 0).
+put_cell_line(_Height, 0) :- !.
 put_cell_line(Height, Width) :-
     put_cell_pixel,
     Width1 is Width - 1,
     put_cell_line(Height, Width1).
 
-put_cell_aux(0, _).
+put_cell_aux(0, _) :- !.
 put_cell_aux(Height, Width) :-
     put_cell_line(Height, Width),
     move_cursor_down(1),
@@ -264,7 +264,7 @@ display_border_vertical(Row) :-
     put_cell,
     draw_piece(Row).
 
-display_border_horizontal_aux(Width, Width).
+display_border_horizontal_aux(Width, Width) :- !.
 display_border_horizontal_aux(Width, Col) :- 
     put_cell,
     Value is 65 + Col,
