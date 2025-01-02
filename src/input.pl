@@ -1,10 +1,14 @@
 :- use_module(library(between)).
 :- use_module(library(lists)).
 
-% input_number(-Value),
+% input_number(-Number)
+% Reads a number from the input
 input_number(Number):-
     input_number_aux(Number, 0).
 
+% input_number_aux(-Number, +Accumulator)
+% Auxiliar function to read a number from input
+% Stops at line feed and skips unwanted characters
 input_number_aux(Number, Accumulator):- 
     peek_code(Code),
     between(48, 57, Code), !,
@@ -18,9 +22,13 @@ input_number_aux(Number, Accumulator) :-
     input_number_aux(Number, Accumulator).
 
 % input_string(-String)
+% Reads a string from the input
 input_string(String):-
     input_string_aux(String, []).
 
+% input_string_aux(-String, +Accumulator)
+% Auxiliar function to read a string from input
+% Stops at line feed and skips unwanted characters
 input_string_aux(String, Accumulator):- 
     peek_code(Code),
     between(32, 126, Code), !,
@@ -34,10 +42,14 @@ input_string_aux(String, Accumulator) :-
     get_code(_),
     input_string_aux(String, Accumulator).
 
-% input_position(-Position)
+% input_position(-Position, +Size)
+% Reads a position from the input
 input_position(Position, Size):-
     input_position_aux(Position, 0, 0, Size).
 
+% input_position_aux(-Position, +Row, +Col, +Size)
+% Auxiliar function to read a position from input
+% Stops at line feed and skips unwanted characters
 input_position_aux(Position, Row, Col, Size):-
     (Col = 0 ; Size > 26),
     peek_code(Code),

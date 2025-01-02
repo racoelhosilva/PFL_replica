@@ -43,7 +43,7 @@
 
 :- use_module(library(between)).
 
-% Text Formatting
+% General Text Formatting
 reset :- write('\e[0m').
 bold :- write('\e[1m').
 faint :- write('\e[2m').
@@ -61,7 +61,7 @@ reset_hidden :- write('\e[28m').
 strikethrough :- write('\e[9m').
 reset_strikethrough :- write('\e[29m').
 
-% Colors
+% Text and Background Colors (3/4-bit colors)
 text_color(Color) :- ansi_color_seq(Color, text).
 background_color(Color) :- ansi_color_seq(Color, background).
 
@@ -69,9 +69,11 @@ ansi_color_seq(Color, Type) :-
     color_code(Color, Type, Code),
     format('\e[~dm', [Code]).
 
+% Text and Background Colors (8-bit colors)
 text_color_indexed(Index) :- format('\e[38;5;~dm', [Index]).
 background_color_indexed(Index) :- format('\e[48;5;~dm', [Index]).
 
+% Text and Background Colors (24-bit colors)
 text_color_rgb(R, G, B) :- format('\e[38;2;~d;~d;~dm', [R, G, B]).
 text_color_rgb(color(R, G, B)) :- format('\e[38;2;~d;~d;~dm', [R, G, B]).
 background_color_rgb(R, G, B) :- format('\e[48;2;~d;~d;~dm', [R, G, B]).
@@ -99,7 +101,7 @@ show_cursor :- write('\e[?25h').
 save_cursor :- write('\e[s').
 restore_cursor :- write('\e[u').
 
-% Mapping Colors to ANSI Codes
+% Mapping Colors to ANSI Codes (used for 3/4-bit colors)
 color_code(black, text, 30).
 color_code(red, text, 31).
 color_code(green, text, 32).
