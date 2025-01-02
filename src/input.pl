@@ -65,9 +65,8 @@ input_position_aux(Position, Row, Col, Size):-
     get_code(_),
     NewRow is 10 * Row + (Code - 48),
     input_position_aux(Position, NewRow, Col, Size).
-input_position_aux(Position, Row, Col, _Size):-
-    peek_code(10), !, skip_line,
-    Position = Row-Col.
+input_position_aux(Col-Row, Row, Col, _Size):-
+    peek_code(10), !, skip_line.
 input_position_aux(Position, Row, Col, Size):-
     get_code(_),
     input_position_aux(Position, Row, Col, Size).

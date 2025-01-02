@@ -66,27 +66,27 @@ new_position(Color, _Direction, Position, Board, Position) :-
     board_piece_color(Board, Position, OtherColor),
     OtherColor \= Color, !.
 
-new_position(white, vertical, Row-Col, Board, Row-NewCol) :-
-    NextCol is Col + 1,
-    new_position(white, vertical, Row-NextCol, Board, Row-NewCol).
-new_position(white, horizontal, Row-Col, Board, NewRow-Col) :-
+new_position(white, vertical, Col-Row, Board, Col-NewRow) :-
     NextRow is Row + 1,
-    new_position(white, horizontal, NextRow-Col, Board, NewRow-Col).
-new_position(white, diagonal, Row-Col, Board, NewRow-NewCol) :-
-    NextRow is Row + 1,
+    new_position(white, vertical, Col-NextRow, Board, Col-NewRow).
+new_position(white, horizontal, Col-Row, Board, NewCol-Row) :-
     NextCol is Col + 1,
-    new_position(white, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
+    new_position(white, horizontal, NextCol-Row, Board, NewCol-Row).
+new_position(white, diagonal, Col-Row, Board, NewCol-NewRow) :-
+    NextCol is Col + 1,
+    NextRow is Row + 1,
+    new_position(white, diagonal, NextCol-NextRow, Board, NewCol-NewRow).
 
-new_position(black, vertical, Row-Col, Board, Row-NewCol) :-
-    NextCol is Col - 1,
-    new_position(black, vertical, Row-NextCol, Board, Row-NewCol).
-new_position(black, horizontal, Row-Col, Board, NewRow-Col) :-
+new_position(black, vertical, Col-Row, Board, Col-NewRow) :-
     NextRow is Row - 1,
-    new_position(black, horizontal, NextRow-Col, Board, NewRow-Col).
-new_position(black, diagonal, Row-Col, Board, NewRow-NewCol) :-
-    NextRow is Row - 1,
+    new_position(black, vertical, Col-NextRow, Board, Col-NewRow).
+new_position(black, horizontal, Col-Row, Board, NewCol-Row):-
     NextCol is Col - 1,
-    new_position(black, diagonal, NextRow-NextCol, Board, NewRow-NewCol).
+    new_position(black, horizontal, NextCol-Row, Board, NewCol-Row).
+new_position(black, diagonal, Col-Row, Board, NewCol-NewRow) :-
+    NextCol is Col - 1,
+    NextRow is Row - 1,
+    new_position(black, diagonal, NextCol-NextRow, Board, NewCol-NewRow).
 
 % player_can_move_at(+Player, +Position, +Board)
 player_can_move_at(Player, Position, Board) :-
@@ -108,27 +108,27 @@ seen_by_king(_Color, _Direction, Board, Position) :-
     board_piece(Board, Position, Piece),
     king(Piece), !.
 
-seen_by_king(white, vertical, Board, Row-Col) :-
+seen_by_king(white, vertical, Board, Col-Row) :-
     NextRow is Row - 1,
-    seen_by_king(white, vertical, Board, NextRow-Col).
-seen_by_king(white, horizontal, Board, Row-Col) :-
+    seen_by_king(white, vertical, Board, Col-NextRow).
+seen_by_king(white, horizontal, Board, Col-Row) :-
     NextCol is Col - 1,
-    seen_by_king(white, horizontal, Board, Row-NextCol).
+    seen_by_king(white, horizontal, Board, NextCol-Row).
 seen_by_king(white, diagonal, Board, Row-Col) :-
-    NextRow is Row - 1,
     NextCol is Col - 1,
-    seen_by_king(white, diagonal, Board, NextRow-NextCol).
+    NextRow is Row - 1,
+    seen_by_king(white, diagonal, Board, NextCol-NextRow).
 
-seen_by_king(black, vertical, Board, Row-Col) :-
+seen_by_king(black, vertical, Board, Col-Row) :-
     NextRow is Row + 1,
-    seen_by_king(black, vertical, Board, NextRow-Col).
-seen_by_king(black, horizontal, Board, Row-Col) :-
+    seen_by_king(black, vertical, Board, Col-NextRow).
+seen_by_king(black, horizontal, Board, Col-Row) :-
     NextCol is Col + 1,
-    seen_by_king(black, horizontal, Board, Row-NextCol).
-seen_by_king(black, diagonal, Board, Row-Col) :-
+    seen_by_king(black, horizontal, Board, NextCol-Row).
+seen_by_king(black, diagonal, Board, Col-Row) :-
+    NextCol is Col + 1,
     NextRow is Row + 1,
-    NextCol is Col + 1,
-    seen_by_king(black, diagonal, Board, NextRow-NextCol).
+    seen_by_king(black, diagonal, Board, NextCol-NextRow).
 
 % valid_move(+State, -Move)
 valid_move(State, step(Position, Direction)) :-
