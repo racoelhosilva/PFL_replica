@@ -49,7 +49,7 @@ get_name(Context, Player):-
     input_color(InputColor), text_color_rgb(InputColor),
     input_string(Player).
 
-get_position(Position, Size):-
+get_position(Position, Board):-
     move_cursor_up(2), clear_line,
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('Position of the piece to move: '),
@@ -57,20 +57,19 @@ get_position(Position, Size):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('> '),
     input_color(InputColor), text_color_rgb(InputColor),
+    size(Board, Size),
     input_position(Position, Size),
-    Position = Row-Col,
-    between(1, Size, Row),
-    between(1, Size, Col), !,
+    in_bounds(Board, Position), !,
     restore_cursor,
     move_cursor_up(1), clear_line.
-get_position(Position, Size):-
+get_position(Position, Board):-
     restore_cursor,
     error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
     write('Invalid position! '),
     restore_cursor,
     clear_line,
-    get_position(Position, Size).
+    get_position(Position, Board).
 
 display_valid_moves(Moves) :-
     length(Moves, Length),
@@ -115,8 +114,7 @@ clear_game_info(Length, Cur) :-
 get_move(State, Move) :-
     restore_cursor,
     state_board(State, Board),
-    size(Board, Size),
-    get_position(Position, Size),
+    get_position(Position, Board),
     valid_piece_moves(State, Position, PieceMoves),
     length(PieceMoves, Length),
     Length > 0, !,
@@ -331,19 +329,19 @@ display_value(State, Value) :-
     value_color(Color), text_color_rgb(Color), bold,
     format('~|~tBoard Evaluation: ~8F~t~*+', [Value, NewRight]).
 
-put_move(step(Row-Col, vertical)) :- 
+put_move(step(Col-Row, vertical)) :- 
     vertical_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('|').
-put_move(step(Row-Col, horizontal)) :- 
+put_move(step(Col-Row, horizontal)) :- 
     horizontal_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('-').
-put_move(step(Row-Col, diagonal)) :- 
+put_move(step(Col-Row, diagonal)) :- 
     diagonal_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('/').
-put_move(transform(Row-Col)) :- 
+put_move(transform(Col-Row)) :- 
     transform_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('x').

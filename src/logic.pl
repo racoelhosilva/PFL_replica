@@ -114,7 +114,7 @@ seen_by_king(white, vertical, Board, Col-Row) :-
 seen_by_king(white, horizontal, Board, Col-Row) :-
     NextCol is Col - 1,
     seen_by_king(white, horizontal, Board, NextCol-Row).
-seen_by_king(white, diagonal, Board, Row-Col) :-
+seen_by_king(white, diagonal, Board, Col-Row) :-
     NextCol is Col - 1,
     NextRow is Row - 1,
     seen_by_king(white, diagonal, Board, NextCol-NextRow).

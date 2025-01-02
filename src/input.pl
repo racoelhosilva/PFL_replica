@@ -39,7 +39,7 @@ input_position(Position, Size):-
     input_position_aux(Position, 0, 0, Size).
 
 input_position_aux(Position, Row, Col, Size):-
-    (Col =:= 0 ; Size > 26),
+    (Col = 0 ; Size > 26),
     peek_code(Code),
     UpperBoundCalc is 65 + Size - 1,
     min(UpperBoundCalc, 90, UpperBound),
@@ -48,7 +48,7 @@ input_position_aux(Position, Row, Col, Size):-
     NewCol is Col * 26 + (Code - 64),
     input_position_aux(Position, Row, NewCol, Size).
 input_position_aux(Position, Row, Col, Size):-
-    (Col =:= 0 ; Size > 26),
+    (Col = 0 ; Size > 26),
     peek_code(Code),
     UpperBoundCalc is 97 + Size - 1,
     min(UpperBoundCalc, 122, UpperBound),
@@ -57,7 +57,7 @@ input_position_aux(Position, Row, Col, Size):-
     NewCol is Col * 26 + (Code - 96),
     input_position_aux(Position, Row, NewCol, Size).
 input_position_aux(Position, Row, Col, Size):-
-    (Row =:= 0 ; Size > 10),
+    (Row = 0 ; Size > 10),
     peek_code(Code),
     UpperBoundCalc is 49 + Size - 1,
     min(UpperBoundCalc, 57, UpperBound),
