@@ -40,7 +40,7 @@ game_loop(State) :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(GameConfig, state(Board, white, none, GameConfig, 0)) :- new_board(Board).
+initial_state(GameConfig, state(Board, white, none, 0, GameConfig)) :- new_board(Board).
 
 
 % display_game(+GameState)

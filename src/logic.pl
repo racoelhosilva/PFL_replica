@@ -1,37 +1,37 @@
 :- include(board).
 
 % state_board(+State, -Board)
-state_board(state(Board, _Player, _KingEaten, _GameConfig, _CurrentMove), Board).
+state_board(state(Board, _Player, _KingEaten, _CurrentMove, _GameConfig), Board).
 
 % set_state_board(+State, +Board, -NewState)
-set_state_board(state(_OldBoard, Player, KingEaten, GameConfig, CurrentMove), Board, state(Board, Player, KingEaten, GameConfig, CurrentMove)).
+set_state_board(state(_OldBoard, Player, KingEaten, CurrentMove, GameConfig), Board, state(Board, Player, KingEaten, CurrentMove, GameConfig)).
 
 % state_player(+State, -Player)
-state_player(state(_Board, Player, _KingEaten, _GameConfig, _CurrentMove), Player).
+state_player(state(_Board, Player, _KingEaten, _CurrentMove, _GameConfig), Player).
 
 % set_state_player(+State, +Player, -NewState)
-set_state_player(state(Board, _OldPlayer, KingEaten, GameConfig, CurrentMove), Player, state(Board, Player, KingEaten, GameConfig, CurrentMove)).
+set_state_player(state(Board, _OldPlayer, KingEaten, CurrentMove, GameConfig), Player, state(Board, Player, KingEaten, CurrentMove, GameConfig)).
 
 % get_state_difficulty(+State, -Difficulty)
-get_state_difficulty(state(_, white, _, [_, [_, Difficulty], _], _), Difficulty).
-get_state_difficulty(state(_, black, _, [_, _, [_, Difficulty]], _), Difficulty).
+get_state_difficulty(state(_, white, _, _, [_, [_, Difficulty], _]), Difficulty).
+get_state_difficulty(state(_, black, _, _, [_, _, [_, Difficulty]]), Difficulty).
 
 % get_state_name(+State, +Player, -Name)
-get_state_name(state(_, _, _, [_, [Name, _], _], _), white, Name).
-get_state_name(state(_, _, _, [_, _, [Name, _]], _), black, Name).
+get_state_name(state(_, _, _, _, [_, [Name, _], _]), white, Name).
+get_state_name(state(_, _, _, _, [_, _, [Name, _]]), black, Name).
 
 % get_state_move(+State, -CurrentMove)
-get_state_move(state(_, _, _, [_, _, _], CurrentMove), CurrentMove).
+get_state_move(state(_, _, _, CurrentMove, [_, _, _]), CurrentMove).
 
 % increase_state_move(+State, -NewState)
-increase_state_move(state(Board, Player, KingEaten, GameConfig, CurrentMove), state(Board, Player, KingEaten, GameConfig, NextMove)) :-
+increase_state_move(state(Board, Player, KingEaten, CurrentMove, GameConfig), state(Board, Player, KingEaten, NextMove, GameConfig)) :-
     NextMove is CurrentMove + 1.
 
 % king_eaten(+State, +KingEaten)
-king_eaten(state(_Board, _Player, KingEaten, _GameConfig, _CurrentMove), KingEaten).
+king_eaten(state(_Board, _Player, KingEaten, _CurrentMove, _GameConfig), KingEaten).
 
 % set_king_eaten(+State, +KingEaten, -NewState)
-set_king_eaten(state(Board, Player, _OldKingEaten, GameConfig, CurrentMove), KingEaten, state(Board, Player, KingEaten, GameConfig, CurrentMove)).
+set_king_eaten(state(Board, Player, _OldKingEaten, CurrentMove, GameConfig), KingEaten, state(Board, Player, KingEaten, CurrentMove, GameConfig)).
 
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
 verify_and_set_king_eaten(Piece, State, State) :- \+ king(Piece), !.

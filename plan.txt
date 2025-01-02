@@ -1,5 +1,5 @@
-% State -> state(Board, CurrentPlayer, KingEaten, GameConfig, CurrentMove)
+% State -> state(Board, CurrentPlayer, KingEaten, CurrentMove, GameConfig)
 % Add more variables when more game modes are implemented
 
-% GameConfig -> gameConfig(GameMode, Player1Info, Player2Info)
-% PlayerInfo -> playerInfo(Name, Difficulty)
+% GameConfig -> [GameMode, Player1Info, Player2Info]
+% PlayerInfo -> [Name, Difficulty]
