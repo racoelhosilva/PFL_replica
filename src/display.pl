@@ -297,7 +297,7 @@ display_board(board(Board, Size)) :-
 display_winner(State, Winner) :-
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
-    get_state_name(State, Winner, Name),
+    state_name(State, Winner, Name),
     display_winner_aux(Name, Winner),
     restore_cursor.
 
@@ -312,7 +312,7 @@ display_player(State) :-
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
     state_player(State, Player),
-    get_state_name(State, Player, Name),
+    state_name(State, Player, Name),
     display_player_aux(Name, Player),
     restore_cursor.
 
@@ -358,7 +358,7 @@ draw_move(black, Move, _CurrentMove) :-
     put_move(Move).
 
 display_move(State, Move) :-
-    get_state_move(State, CurrentMove),
+    state_move(State, CurrentMove),
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),
     VerticalBound is Bottom - 13 - 12,

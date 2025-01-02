@@ -24,7 +24,7 @@ game_loop(State) :-
     reset, show_cursor.
 
 game_loop(State) :-
-    get_state_difficulty(State, Difficulty),
+    state_difficulty(State, Difficulty),
     choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
     display_game(IntState),

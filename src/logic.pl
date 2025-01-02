@@ -12,16 +12,16 @@ state_player(state(_Board, Player, _KingEaten, _CurrentMove, _GameConfig), Playe
 % set_state_player(+State, +Player, -NewState)
 set_state_player(state(Board, _OldPlayer, KingEaten, CurrentMove, GameConfig), Player, state(Board, Player, KingEaten, CurrentMove, GameConfig)).
 
-% get_state_difficulty(+State, -Difficulty)
-get_state_difficulty(state(_, white, _, _, [_, [_, Difficulty], _]), Difficulty).
-get_state_difficulty(state(_, black, _, _, [_, _, [_, Difficulty]]), Difficulty).
+% state_difficulty(+State, -Difficulty)
+state_difficulty(state(_, white, _, _, [_, [_, Difficulty], _]), Difficulty).
+state_difficulty(state(_, black, _, _, [_, _, [_, Difficulty]]), Difficulty).
 
-% get_state_name(+State, +Player, -Name)
-get_state_name(state(_, _, _, _, [_, [Name, _], _]), white, Name).
-get_state_name(state(_, _, _, _, [_, _, [Name, _]]), black, Name).
+% state_name(+State, +Player, -Name)
+state_name(state(_, _, _, _, [_, [Name, _], _]), white, Name).
+state_name(state(_, _, _, _, [_, _, [Name, _]]), black, Name).
 
-% get_state_move(+State, -CurrentMove)
-get_state_move(state(_, _, _, CurrentMove, [_, _, _]), CurrentMove).
+% state_move(+State, -CurrentMove)
+state_move(state(_, _, _, CurrentMove, _), CurrentMove).
 
 % increase_state_move(+State, -NewState)
 increase_state_move(state(Board, Player, KingEaten, CurrentMove, GameConfig), state(Board, Player, KingEaten, NextMove, GameConfig)) :-
