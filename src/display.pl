@@ -2,7 +2,7 @@
 :- use_module(library(lists)).
 
 :- include(input).
-:- include(interface).
+:- include(theme).
 
 get_option(Min, Max, Context, Value):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
