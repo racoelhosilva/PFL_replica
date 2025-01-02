@@ -400,7 +400,7 @@ get_right_coordinate(State, Value) :-
 get_bottom_coordinate(State, Value) :-
     state_board(State, board(_Board, Size)),
     tile_height(Height),
-    Value is (Size + 2) * Height + 13.
+    Value is (Size + 2) * Height + 12.
 
 save_input_position(State) :-
     get_right_coordinate(State, Right),
