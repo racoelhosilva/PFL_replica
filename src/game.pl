@@ -27,7 +27,7 @@ game_loop(State) :-
     state_difficulty(State, Difficulty),
     choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
-    display_game(IntState),
+    overlay_game(IntState),
     display_move(State, Move),
     sleep(1),
     game_loop(IntState).
@@ -50,15 +50,9 @@ initial_state(GameConfig, state(Board, white, none, 0, GameConfig)) :- new_board
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
 display_game(State) :-
-    home, background(BG), background_color_rgb(BG),
-    hide_cursor,
-    display_title,
-    state_board(State, Board),
-    display_board(Board),
-    background(BG), background_color_rgb(BG),
-    display_player(State),
-    value(State, white, Value),
-    display_value(State, Value).
+    home, background(BG), background_color_rgb(BG), clear_screen,
+    overlay_game(State),
+    reset, show_cursor.
 
 % move(+GameState, +Move, -NewGameState)
 % This predicate is responsible for move validation and

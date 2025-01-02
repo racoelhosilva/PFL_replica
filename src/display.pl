@@ -383,6 +383,17 @@ display_title :-
     format('~|~t~a~t~120+', '|___|  |_||_______||___|    |_______||___| |_______||__| |__|'), nl,
     move_cursor(10, 1).
 
+overlay_game(State) :-
+    home, background(BG), background_color_rgb(BG),
+    hide_cursor,
+    display_title,
+    state_board(State, Board),
+    display_board(Board),
+    background(BG), background_color_rgb(BG),
+    display_player(State),
+    value(State, white, Value),
+    display_value(State, Value).
+
 get_right_coordinate(State, Value) :-
     state_board(State, board(_Board, Size)),
     tile_width(Width),
