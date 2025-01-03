@@ -32,7 +32,7 @@ king(black_king).
 size(board(_Board, Size), Size).
 
 % in_bounds(+Board, +Position)
-in_bounds(board(_Board, Size), Row-Col) :- between(1, Size, Row), between(1, Size, Col).
+in_bounds(board(_Board, Size), Col-Row) :- between(1, Size, Row), between(1, Size, Col).
 
 % board_piece(+Board, +Position, -Piece)
 board_piece(board(Board, _Size), Position, Piece) :-

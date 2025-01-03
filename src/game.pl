@@ -3,27 +3,35 @@
 
 :- include(display).
 :- include(logic).
+:- include(config).
 
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
 % by the artificial player(s), among other possible parameters, and start the game cycle.
 play :-
+    home, background(BG), background_color_rgb(BG), clear_screen,
+    display_title,
     display_menu(GameConfig),
+    clear_screen,
     initial_state(GameConfig, State),
+    save_input_position(State),
     display_game(State),
     game_loop(State), !.
 
 % game_loop(+State)
 game_loop(State) :-
     game_over(State, Winner), !,
-    write(Winner).
+    display_winner(State, Winner), 
+    reset, show_cursor.
 
 game_loop(State) :-
-    get_state_difficulty(State, Difficulty),
+    state_config(State, GameConfig),
+    state_player(State, Player),
+    config_difficulty(GameConfig, Player, Difficulty),
     choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
-    display_game(IntState),
-    value(IntState, white, WhiteValue), value(IntState, black, BlackValue), write(WhiteValue), write(' '), write(BlackValue), nl,
+    overlay_game(IntState),
+    display_history_move(State, Move),
     sleep(1),
     game_loop(IntState).
 
@@ -35,7 +43,7 @@ game_loop(State) :-
 % state, including board configuration (typically using list of lists with different atoms for the different
 % pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
 % pieces yet to be played, or any other information that may be required, depending on the game.
-initial_state(GameConfig, state(Board, white, none, GameConfig)) :- new_board(Board).
+initial_state(GameConfig, state(Board, white, none, 0, GameConfig)) :- new_board(Board).
 
 
 % display_game(+GameState)
@@ -44,10 +52,10 @@ initial_state(GameConfig, state(Board, white, none, GameConfig)) :- new_board(Bo
 % visualizations will be valued. Flexible game state representations and visualization predicates will
 % also be valued, for instance those that work with any board size. For uniformization purposes,
 % coordinates should start at (1,1) at the lower left corner
-display_game(state(Board, Player, _KingEaten, _GameConfig)) :-
-    display_board(Board),
-    display_player(Player),
-    nl.
+display_game(State) :-
+    home, background(BG), background_color_rgb(BG), clear_screen,
+    overlay_game(State),
+    reset, show_cursor.
 
 % move(+GameState, +Move, -NewGameState)
 % This predicate is responsible for move validation and
@@ -55,7 +63,8 @@ display_game(state(Board, Player, _KingEaten, _GameConfig)) :-
 % returns the new game state after the move is executed.
 move(GameState, Move, NewGameState) :-
     execute_move(GameState, Move, IntermediateGameState),
-    switch_player(IntermediateGameState, NewGameState).
+    switch_player(IntermediateGameState, IntermediateGameState2),
+    increase_state_move(IntermediateGameState2, NewGameState).
 
 % valid_moves(+GameState, -ListOfMoves)
 % This predicate receives the current game state, and
