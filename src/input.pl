@@ -9,14 +9,14 @@ input_number(Number):-
 % input_number_aux(-Number, +Accumulator)
 % Auxiliar function to read a number from input
 % Stops at line feed and skips unwanted characters
+input_number_aux(Number, Number) :-
+    peek_code(10), !, skip_line.
 input_number_aux(Number, Accumulator):- 
     peek_code(Code),
     between(48, 57, Code), !,
     get_code(_),
     NewAccumulator is 10 * Accumulator + (Code - 48),
     input_number_aux(Number, NewAccumulator).
-input_number_aux(Number, Number) :-
-    peek_code(10), !, skip_line.
 input_number_aux(Number, Accumulator) :-
     get_code(_),
     input_number_aux(Number, Accumulator).
@@ -29,15 +29,15 @@ input_string(String):-
 % input_string_aux(-String, +Accumulator)
 % Auxiliar function to read a string from input
 % Stops at line feed and skips unwanted characters
+input_string_aux(String, Accumulator) :-
+    peek_code(10), !, skip_line,
+    atom_codes(String, Accumulator).
 input_string_aux(String, Accumulator):- 
     peek_code(Code),
     between(32, 126, Code), !,
     get_code(_),
     append(Accumulator, [Code], NewAccumulator),
     input_string_aux(String, NewAccumulator).
-input_string_aux(String, Accumulator) :-
-    peek_code(10), !, skip_line,
-    atom_codes(String, Accumulator).
 input_string_aux(String, Accumulator) :-
     get_code(_),
     input_string_aux(String, Accumulator).
@@ -54,7 +54,7 @@ input_position_aux(Position, Row, Col, Size):-
     col_or_size_condition(Col, Size),
     peek_code(Code),
     UpperBoundCalc is 65 + Size - 1,
-    min(UpperBoundCalc, 90, UpperBound),
+    UpperBound is min(UpperBoundCalc, 90),
     between(65, UpperBound, Code), !,
     get_code(_),
     NewCol is Col * 26 + (Code - 64),
@@ -63,7 +63,7 @@ input_position_aux(Position, Row, Col, Size):-
     col_or_size_condition(Col, Size),
     peek_code(Code),
     UpperBoundCalc is 97 + Size - 1,
-    min(UpperBoundCalc, 122, UpperBound),
+    UpperBound is min(UpperBoundCalc, 122),
     between(97, UpperBound, Code), !,
     get_code(_),
     NewCol is Col * 26 + (Code - 96),
@@ -72,7 +72,7 @@ input_position_aux(Position, Row, Col, Size):-
     row_or_size_condition(Row, Size),
     peek_code(Code),
     UpperBoundCalc is 49 + Size - 1,
-    min(UpperBoundCalc, 57, UpperBound),
+    UpperBound is min(UpperBoundCalc, 57),
     between(46, UpperBound, Code), !,
     get_code(_),
     NewRow is 10 * Row + (Code - 48),
