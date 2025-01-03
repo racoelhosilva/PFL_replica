@@ -94,7 +94,7 @@ get_name(Context, Player):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('    Name for ~a: ', [Context]),
     input_color(InputColor), text_color_rgb(InputColor),
-    input_string(Player).
+    read_string(Player).
 
 % get_difficulty(-Difficulty)
 % Displays the difficulty level menu and reads the selected difficulty level
@@ -116,7 +116,7 @@ get_option(Min, Max, Context, Value):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
     input_color(InputColor), text_color_rgb(InputColor),
-    input_number(Value),
+    read_number(Value),
     between(Min, Max, Value), !,
     restore_cursor,
     clear_line, write(Context), write(' '), write(Value), write(' selected!'),
@@ -400,7 +400,7 @@ get_position(Position, Board):-
     write('> '),
     input_color(InputColor), text_color_rgb(InputColor),
     size(Board, Size),
-    input_position(Position, Size),
+    read_position(Position, Size),
     in_bounds(Board, Position), !,
     restore_cursor,
     move_cursor_up(1), clear_line.
@@ -464,7 +464,7 @@ get_game_option(Min, Max, Context, Value):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     write('> '),
     input_color(InputColor), text_color_rgb(InputColor),
-    input_number(Value),
+    read_number(Value),
     between(Min, Max, Value), !,
     restore_cursor,
     move_cursor_up(1), clear_line.
