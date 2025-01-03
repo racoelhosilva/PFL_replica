@@ -147,7 +147,8 @@ valid_move(State, transform(Position)) :-
 
 % valid_piece_moves(+State, +Position, -Moves)
 valid_piece_moves(State, Piece, Moves) :-
-    findall(Move, valid_piece_move(State, Piece, Move), Moves).
+    setof(Move, valid_piece_move(State, Piece, Move), Moves).
+valid_piece_moves(_, _, []).
 
 % valid_piece_move(+State, +Piece, -Move)
 valid_piece_move(State, Piece, step(Piece, Direction)) :-
