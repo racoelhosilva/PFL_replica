@@ -50,11 +50,11 @@ The files associated with the user interaction are the `display.pl` and `input.p
     - **Numbers**: read as the resulting integer from concatenating all the digits in the input string (i.e. skipping all the other characters until it reaches the end of the line)
     - **Strings**: read as the concatenation of all the characters with ASCII codes between 32-127, which includes spaces, numbers, letters and other symbols and punctuation (also skips all other characters until it reaches the end of the line)
     - **Positions**: referenced as a spreadsheet where the position is a combination of letters and numbers. Letters refer to the column, numbers to the row, and their order doesn't matter. Characters that are larger than a given coordinate range (or are irrelevant) are skipped automatically. When the coordinate only needs one character, the first valid character is considered. Otherwise, all valid symbols for a given coordinate are read and concatenated for spreadsheet-like indexing (i.e. rows: ... 9, 10, 11 ... and columns: ... Z, AA, AB ...). This was done to make the functions more flexible for larger board sizes.
-    > As an example, all of the following coordinates represent the same position (Column A, Row 8) in an 8x8 board: `a8`, `az8`, `ai8`, `8a`, `89za`, ` 8 _ a `, `l8-askd-jsa_das123888812312`.
+    > As an example, all of the following "inputs" represent the same position (Column A, Row 8) in an 8x8 board: `a8`, `az8`, `ai8`, `8a`, `89za`, ` 8 _ a `, `l8-askd-jsa_das123888812312`.
 
 When it comes to input validation, some small validations are performed by the input functions (mostly skipping unwanted characters), but on top that, the predicates from the `display.pl` that use them also make some verifications:
 - **Options**: for option menus, it is checked that the number is contained between 1 and the total number of options
-- **Positions**: for positions, it is checked that the position corresponds to a piece with valid moves for the current state of the board
+- **Positions**: for positions, it is checked that the position corresponds to a piece with valid moves for the current state of the board  
 Any errors that occur from the previous validations will simply display an error message to the user and prompt for new input from the user.
 
 ### Game Interface
