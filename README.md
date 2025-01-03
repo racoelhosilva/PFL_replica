@@ -11,7 +11,7 @@
 
 The project was made to run using SICStus Prolog 4.9. The process is identical for both Linux and Windows operating systems:
 
-1. **Make sure you are using a roper terminal**: the project uses ANSI escape sequences for a better interface. In order for them to work, please use a terminal that supports these sequences:
+1. **Make sure you are using a proper terminal**: the project uses ANSI escape sequences for a better interface. In order for them to work, please use a terminal that supports these sequences:
    - **Windows**: **PowerShell** or Windows Terminal.
    - **Linux**: Any **modern terminal emulator** should work.
 2. **Load the Project**: navigate to the project directory and load the main file by executing the following command:
