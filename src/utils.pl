@@ -18,3 +18,10 @@ set_matrix_at(Matrix, Col-Row, Value, NewMatrix) :-
 
 % compare_keys(+Entry1, +Entry2)
 compare_keys(Key1-_, Key2-_) :- Key1 =< Key2.
+
+% max_key_set(+EntryList, -MaxKeyValues)
+max_key_set(EntryList, MaxKeyValues) :-
+    findall(Key-Values, (
+        bagof(Value, member(Key-Value, EntryList), Values)
+    ), KeyValuesList),
+    max_member(compare_keys, _-MaxKeyValues, KeyValuesList).
