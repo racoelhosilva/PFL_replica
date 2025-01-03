@@ -488,9 +488,9 @@ clear_valid_moves(Length, Cur) :-
 
 /* Move History Display Functions */
 
-% display_move(+State, +Move)
+% display_history_move(+State, +Move)
 % Displays a move on the history section of the screen
-display_move(State, Move) :-
+display_history_move(State, Move) :-
     state_move(State, CurrentMove),
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),
@@ -502,34 +502,34 @@ display_move(State, Move) :-
     move_cursor(Row, CurrentCol),
     state_player(State, Player),
     CurrentTurn is Row1 + 1,
-    draw_move(Player, Move, CurrentTurn),
+    draw_history_move(Player, Move, CurrentTurn),
     restore_cursor.
 
-% draw_move(+Color, +Move, +CurrentMove)
+% draw_history_move(+Color, +Move, +CurrentMove)
 % Draws current move on the history section of the screen
-draw_move(white, Move, CurrentMove) :-
+draw_history_move(white, Move, CurrentMove) :-
     notation_color(Color), text_color_rgb(Color), bold,
     format('~|~d.~t~3+ ', [CurrentMove]),
-    put_move(Move).
-draw_move(black, Move, _CurrentMove) :-
+    put_history_move_code(Move).
+draw_history_move(black, Move, _CurrentMove) :-
     move_cursor_right(8),
-    put_move(Move).
+    put_history_move_code(Move).
 
-% put_move(+Move)
+% put_history_move_code(+Move)
 % Puts a move on the screen, with the corresponding color
-put_move(step(Col-Row, vertical)) :- 
+put_history_move_code(step(Col-Row, vertical)) :- 
     vertical_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('|').
-put_move(step(Col-Row, horizontal)) :- 
+put_history_move_code(step(Col-Row, horizontal)) :- 
     horizontal_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('-').
-put_move(step(Col-Row, diagonal)) :- 
+put_history_move_code(step(Col-Row, diagonal)) :- 
     diagonal_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('/').
-put_move(transform(Col-Row)) :- 
+put_history_move_code(transform(Col-Row)) :- 
     transform_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
     write(AlphaCol), write(Row), write('x').

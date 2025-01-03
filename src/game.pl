@@ -28,7 +28,7 @@ game_loop(State) :-
     choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
     overlay_game(IntState),
-    display_move(State, Move),
+    display_history_move(State, Move),
     sleep(1),
     game_loop(IntState).
 
