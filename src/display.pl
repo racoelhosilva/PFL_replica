@@ -491,11 +491,11 @@ clear_valid_moves(Length, Cur) :-
 % display_history_move(+State, +Move)
 % Displays a move on the history section of the screen
 display_history_move(State, Move) :-
-    state_move(State, CurrentMove),
+    state_move(State, MoveCounter),
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),
     VerticalBound is Bottom - 13 - 12,
-    Row1 is CurrentMove // 2,
+    Row1 is MoveCounter // 2,
     CurrentRow is Row1 mod VerticalBound,
     CurrentCol is Right + (Row1 // VerticalBound) * 14,
     Row is 13 + CurrentRow,
@@ -505,13 +505,13 @@ display_history_move(State, Move) :-
     draw_history_move(Player, Move, CurrentTurn),
     restore_cursor.
 
-% draw_history_move(+Color, +Move, +CurrentMove)
+% draw_history_move(+Color, +Move, +MoveCounter)
 % Draws current move on the history section of the screen
-draw_history_move(white, Move, CurrentMove) :-
+draw_history_move(white, Move, MoveCounter) :-
     notation_color(Color), text_color_rgb(Color), bold,
-    format('~|~d.~t~3+ ', [CurrentMove]),
+    format('~|~d.~t~3+ ', [MoveCounter]),
     put_history_move_code(Move).
-draw_history_move(black, Move, _CurrentMove) :-
+draw_history_move(black, Move, _MoveCounter) :-
     move_cursor_right(8),
     put_history_move_code(Move).
 

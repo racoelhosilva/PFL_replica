@@ -1,3 +1,3 @@
-% State -> state(Board, CurrentPlayer, KingEaten, CurrentMove, GameConfig)
+% State -> state(Board, CurrentPlayer, KingEaten, MoveCounter, GameConfig)
 % GameConfig -> game_config(GameMode, Player1Info, Player2Info)
 % PlayerInfo -> player_info(Name, Difficulty)
