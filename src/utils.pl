@@ -25,11 +25,3 @@ max_key_set(EntryList, MaxKeyValues) :-
         bagof(Value, member(Key-Value, EntryList), Values)
     ), KeyValuesList),
     max_member(compare_keys, _-MaxKeyValues, KeyValuesList).
-
-% max(+X, +Y, -Max)
-max(X, Y, X) :- X >= Y, !.
-max(_, Y, Y).
-
-% min(+X, +Y, -Min)
-min(X, Y, X) :- X =< Y, !.
-min(_, Y, Y).
