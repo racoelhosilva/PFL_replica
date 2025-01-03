@@ -44,7 +44,7 @@ piece_black(color(0,255,0)).
 
 % Symbols of the "black" pieces
 black_pawn_symbol('B').
-black_king_symbol('+B+').
+black_king_symbol('*B*').
 
 % Color of the border of the board
 border_background(color(59, 27, 4)).
