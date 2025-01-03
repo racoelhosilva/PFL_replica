@@ -143,7 +143,7 @@ valid_move(State, transform(Position)) :-
     \+ king(Piece),
     seen_by_king(Player, _Direction, Board, Position), !.
 
-% valid_piece_moves(+State, +Position, -Moves)
+% valid_piece_moves(+State, +Piece, -Moves)
 valid_piece_moves(State, Piece, Moves) :-
     findall(Move, valid_piece_move(State, Piece, Move), Moves).
 
