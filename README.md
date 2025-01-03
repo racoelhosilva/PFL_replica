@@ -32,7 +32,6 @@ The game is over if a player wins by getting any friendly king into the opposite
 
 \- *description from designer*
 
-
 ## Considerations for Game Extensions
 
 ## Game Logic
@@ -45,14 +44,20 @@ The game is over if a player wins by getting any friendly king into the opposite
 
 ### User Interaction
 
-> The numbers are read as the resulting integer from concatenating all the digits in the input string (i.e. skipping all the junk that may be put there)
+The files associated with the user interaction are the `display.pl` and `input.pl`:
+- The `display.pl` file contains all predicates that print something to the screen (game title, option menus, **input prompts**, game board and other indications such as evaluation or move history). This file makes extensive use of the `ansi.pl` module developed and uses the configurations specified in the `theme.pl`, more details about this can be found below.
+- The `input.pl` file contains the predicates responsible for reading user input (numbers/options, strings/names and positions/coordinates), without producing any output, in the following ways:
+    - **Numbers**: read as the resulting integer from concatenating all the digits in the input string (i.e. skipping all the other characters until it reaches the end of the line)
+    - **Strings**: read as the concatenation of all the characters with ASCII codes between 32-127, which includes spaces, numbers, letters and other symbols and punctuation (also skips all other characters until it reaches the end of the line)
+    - **Positions**: referenced as a spreadsheet where the position is a combination of letters and numbers. Letters refer to the column, numbers to the row, and their order doesn't matter. Characters that are larger than a given coordinate range (or are irrelevant) are skipped automatically. When the coordinate only needs one character, the first valid character is considered. Otherwise, all valid symbols for a given coordinate are read and concatenated for spreadsheet-like indexing (i.e. rows: ... 9, 10, 11 ... and columns: ... Z, AA, AB ...). This was done to make the functions more flexible for larger board sizes.
+    > As an example, all of the following coordinates represent the same position (Column A, Row 8) in an 8x8 board: `a8`, `az8`, `ai8`, `8a`, `89za`, ` 8 _ a `, `l8-askd-jsa_das123888812312`.
 
-> The strings are the concatenation of all the chars with ASCII codes between 32-127, which includes spaces, numbers, letters and a bunch of symbols (the rest of characters is skipped)
+When it comes to input validation, some small validations are performed by the input functions (mostly skipping unwanted characters), but on top that, the predicates from the `display.pl` that use them also make some verifications:
+- **Options**: for option menus, it is checked that the number is contained between 1 and the total number of options
+- **Positions**: for positions, it is checked that the position corresponds to a piece with valid moves for the current state of the board
+Any errors that occur from the previous validations will simply display an error message to the user and prompt for new input from the user.
 
-> The coordinates are referenced like a spreadsheet with input where containing a sequence of letters and numbers. Letters refer to the column and numbers to the row, letters that don't exist in the range are skipped automatically and the first valid letter is considered. The same applies for numbers. For boards larger than 26, it is assumed spreadsheet-like index continuing from AA, AB, AC...  
-> As an example, all of the following coordinates represent the same position in an 8x8 board: `a8`, `az8`, `ai8`, `8a`, `89za`, ` 8 _ a`.
-
-## User Interface
+### Game Interface
 
 ## Conclusions
 
