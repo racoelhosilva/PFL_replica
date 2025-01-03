@@ -111,7 +111,7 @@ get_difficulty(Difficulty):-
 
 % get_option(+Min, +Max, +Context, -Value)
 % Prompts the user for an option between Min and Max and reads the input
-% Similar to get_option_game/4, but used for the game menu
+% Similar to get_game_option/4, but used for the game menu
 get_option(Min, Max, Context, Value):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
@@ -371,7 +371,7 @@ get_move(State, Move) :-
     restore_cursor,
     display_valid_moves(PieceMoves),
     restore_cursor,
-    get_option_game(1, Length, 'Move', Index),
+    get_game_option(1, Length, 'Move', Index),
     nth1(Index, PieceMoves, Move), !,
     restore_cursor,
     length(PieceMoves, Length),
@@ -451,10 +451,10 @@ display_valid_move(transform(_Position)) :-
     transform_color(Color), text_color_rgb(Color),
     write('Transform').
     
-% get_option_game(+Min, +Max, +Context, -Value)
+% get_game_option(+Min, +Max, +Context, -Value)
 % Prompts the user for an option between Min and Max and reads the input
 % Similar to get_option/4, but used for in-game options
-get_option_game(Min, Max, Context, Value):-
+get_game_option(Min, Max, Context, Value):-
     move_cursor_up(2), clear_line,
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
@@ -466,7 +466,7 @@ get_option_game(Min, Max, Context, Value):-
     between(Min, Max, Value), !,
     restore_cursor,
     move_cursor_up(1), clear_line.
-get_option_game(Min, Max, Context, Value):-
+get_game_option(Min, Max, Context, Value):-
     restore_cursor,
     error_color(ErrorColor), text_color_rgb(ErrorColor),
     move_cursor_up(1),
@@ -474,7 +474,7 @@ get_option_game(Min, Max, Context, Value):-
     write('Invalid option! '),
     restore_cursor,
     clear_line,
-    get_option_game(Min, Max, Context, Value).
+    get_game_option(Min, Max, Context, Value).
 
 % clear_valid_moves(+Length, +Cur)
 % Clears the valid move menu displayed on the screen
