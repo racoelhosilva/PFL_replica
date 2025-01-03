@@ -421,20 +421,20 @@ display_valid_moves(Moves) :-
     menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
     write('Valid moves:'),
     reset_bold,
-    display_valid_moves_aux(Moves, Length, 1).
+    display_valid_moves_aux(Moves, Length).
 
-% display_valid_moves_aux(+Moves, +Length, +Index)
+% display_valid_moves_aux(+Moves, +Length)
 % Auxiliar function to display the valid moves for a piece
-display_valid_moves_aux([], _, _).
-display_valid_moves_aux([Move|Rest], Length, Index) :-
+display_valid_moves_aux(Moves, Length) :-
+    nth1(Index, Moves, Move),
     restore_cursor,
     Shift is Length + 4 - Index,
     move_cursor_up(Shift),
     menu_options_color(OptionsColor), text_color_rgb(OptionsColor),
     write(Index), write('. '),
     display_valid_move(Move),
-    Index1 is Index + 1,
-    display_valid_moves_aux(Rest, Length, Index1).
+    fail.
+display_valid_moves_aux(_, _).
 
 % display_valid_move(+Move)
 % Displays a valid move for a piece, with the corresponding color
