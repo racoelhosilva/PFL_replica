@@ -12,13 +12,11 @@ state_player(state(_Board, Player, _KingEaten, _MoveCounter, _GameConfig), Playe
 % set_state_player(+State, +Player, -NewState)
 set_state_player(state(Board, _OldPlayer, KingEaten, MoveCounter, GameConfig), Player, state(Board, Player, KingEaten, MoveCounter, GameConfig)).
 
-% state_difficulty(+State, -Difficulty)
-state_difficulty(state(_, white, _, _, game_config(_, player_info(_, Difficulty), _)), Difficulty).
-state_difficulty(state(_, black, _, _, game_config(_, _, player_info(_, Difficulty))), Difficulty).
+% king_eaten(+State, -KingEaten)
+king_eaten(state(_Board, _Player, KingEaten, _MoveCounter, _GameConfig), KingEaten).
 
-% state_name(+State, +Player, -Name)
-state_name(state(_, _, _, _, game_config(_, player_info(Name, _), _)), white, Name).
-state_name(state(_, _, _, _, game_config(_, _, player_info(Name, _))), black, Name).
+% set_king_eaten(+State, +KingEaten, -NewState)
+set_king_eaten(state(Board, Player, _OldKingEaten, MoveCounter, GameConfig), KingEaten, state(Board, Player, KingEaten, MoveCounter, GameConfig)).
 
 % state_move(+State, -MoveCounter)
 state_move(state(_, _, _, MoveCounter, _), MoveCounter).
@@ -27,11 +25,11 @@ state_move(state(_, _, _, MoveCounter, _), MoveCounter).
 increase_state_move(state(Board, Player, KingEaten, MoveCounter, GameConfig), state(Board, Player, KingEaten, NextMove, GameConfig)) :-
     NextMove is MoveCounter + 1.
 
-% king_eaten(+State, +KingEaten)
-king_eaten(state(_Board, _Player, KingEaten, _MoveCounter, _GameConfig), KingEaten).
+% state_config(+State, -GameConfig)
+state_config(state(_Board, _Player, _KingEaten, _MoveCounter, GameConfig), GameConfig).
 
-% set_king_eaten(+State, +KingEaten, -NewState)
-set_king_eaten(state(Board, Player, _OldKingEaten, MoveCounter, GameConfig), KingEaten, state(Board, Player, KingEaten, MoveCounter, GameConfig)).
+% set_state_config(+State, +GameConfig, -NewState)
+set_state_config(state(Board, Player, KingEaten, MoveCounter, _OldGameConfig), GameConfig, state(Board, Player, KingEaten, MoveCounter, GameConfig)).
 
 % verify_and_set_king_eaten(+Piece, +State, -NewState)
 verify_and_set_king_eaten(Piece, State, State) :- \+ king(Piece), !.

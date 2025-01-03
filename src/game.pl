@@ -3,6 +3,7 @@
 
 :- include(display).
 :- include(logic).
+:- include(config).
 
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
@@ -24,7 +25,9 @@ game_loop(State) :-
     reset, show_cursor.
 
 game_loop(State) :-
-    state_difficulty(State, Difficulty),
+    state_config(State, GameConfig),
+    state_player(State, Player),
+    config_difficulty(GameConfig, Player, Difficulty),
     choose_move(State, Difficulty, Move),
     move(State, Move, IntState),
     overlay_game(IntState),

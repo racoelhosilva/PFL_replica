@@ -320,8 +320,9 @@ draw_wide_piece(WideSymbol) :-
 display_player(State) :- 
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
+    state_config(State, GameConfig),
     state_player(State, Player),
-    state_name(State, Player, Name),
+    config_name(GameConfig, Player, Name),
     display_player_aux(Name, Player),
     restore_cursor.
 
@@ -339,7 +340,8 @@ display_player_aux(Name, black) :-
 display_winner(State, Winner) :-
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
-    state_name(State, Winner, Name),
+    state_config(State, GameConfig),
+    config_name(GameConfig, Winner, Name),
     display_winner_aux(Name, Winner),
     restore_cursor.
 
