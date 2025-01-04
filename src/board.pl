@@ -72,3 +72,35 @@ convert_to_king(board(Board, Size), Position, board(NewBoard, Size)) :-
     matrix_at(Board, Position, Piece),
     as_king(Piece, KingPiece),
     set_matrix_at(Board, Position, KingPiece, NewBoard).
+
+
+/* FOR THE DEMONSTRATION */
+
+% intermediate_board(+Board)
+% Creates a board with in a middle game position.
+% This is used for testing and demonstration purposes.
+intermediate_board(board([
+    [white_king,empty,white_piece,white_piece,empty,empty,empty,empty],
+    [empty,empty,white_piece,white_piece,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,white_piece,empty,empty,empty,black_piece,black_piece,empty],
+    [empty,white_piece,empty,white_piece,white_piece,empty,black_piece,empty],
+    [empty,white_piece,empty,empty,empty,empty,black_piece,empty],
+    [empty,empty,black_piece,black_piece,black_piece,black_piece,empty,empty],
+    [empty,empty,empty,empty,empty,black_piece,empty,black_king]
+],8)).
+
+% final_board(+Board)
+% Creates a board with in a final game position.
+% Depending on the next player to move, either side can win based on different conditions.
+% This is used for testing and demonstration purposes.
+final_board(board([
+    [black_piece,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,black_piece,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,white_king,empty,empty],
+    [empty,white_piece,empty,empty,black_piece,empty,empty,empty],
+    [empty,empty,empty,black_piece,empty,empty,white_piece,empty],
+    [empty,empty,empty,empty,empty,empty,black_king,empty],
+    [empty,empty,empty,empty,empty,empty,white_piece,empty]
+],8)).
