@@ -67,13 +67,10 @@ best_greedy_move(State, Move) :-
     random_member(Move, MaxMoves).
 
 best_minimax_move(State, Depth, Move) :-
-    NextDepth is Depth - 1,
     findall(Value-Move, (
         valid_move(State, Move),
         state_player(State, Player),
-        execute_move(State, Move, IntermediateState),
-        switch_player(IntermediateState, NewState),
-        minimax(Player, NewState, NextDepth, min, Value)
+        evaluate_minimax_move(Player, State, Depth, max, Move, Value)
     ), EvaluatedMoves),
     max_key_set(EvaluatedMoves, BestMoves),
     random_member(Move, BestMoves).
