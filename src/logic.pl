@@ -155,7 +155,7 @@ valid_move(State, transform(Position)) :-
     player_can_move_at(Player, Position, Board),
     board_piece(Board, Position, Piece),
     \+ king(Piece),
-    seen_by_king(Player, Board, Position).  % DOuble negation used to prevent unification of _Direction
+    seen_by_king(Player, Board, Position).
 
 % valid_piece_moves(+State, +Piece, -Moves)
 valid_piece_moves(State, Piece, Moves) :-

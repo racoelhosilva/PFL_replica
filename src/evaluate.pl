@@ -4,9 +4,6 @@
 % evaluate_piece(+Color, +BoardSize, +Piece, +Position, -Value)
 evaluate_piece(_Color, _BoardSize, empty, _Position, 0) :- !.
 
-evaluate_piece(white, BoardSize, white_king, BoardSize-BoardSize, 10000) :- !.
-evaluate_piece(black, _BoardSize, black_king, 1-1, 10000) :- !.
-
 evaluate_piece(white, BoardSize, Piece, Col-Row, Value) :-
     piece_color(Piece, white), !,
     Value is 2 + 3 / ((BoardSize - Row) + (BoardSize - Col) + 1).
@@ -42,18 +39,12 @@ evaluate_board(Color, BoardSize, [Line | BoardTail], Row, Acc, Value) :-
     evaluate_board(Color, BoardSize, BoardTail, NewRow, NewAcc, Value).
 
 % evaluate_state(+Color, +State, -Value)
-evaluate_state(Color, State, Value) :-
-    opposite_color(Color, OppositeColor),
-    king_eaten(State, OppositeColor), !,
-    set_king_eaten(State, none, NewState),
-    evaluate_state(Color, NewState, SubValue),
-    Value is SubValue + 10000.
+evaluate_state(Color, State, 60.0) :-
+    final_state(State, Color), !.
 
-evaluate_state(Color, State, Value) :-
-    king_eaten(State, Color), !,
-    set_king_eaten(State, none, NewState),
-    evaluate_state(Color, NewState, SubValue),
-    Value is SubValue - 10000.
+evaluate_state(Color, State, -60.0) :-
+    opposite_color(Color, OppositeColor),
+    final_state(State, OppositeColor), !.
 
 evaluate_state(Color, State, Value) :-
     state_board(State, Board),
@@ -69,14 +60,17 @@ evaluate_move(State, Move, Value-Move) :-
 evaluate_moves(State, Moves, EvaluatedMoves) :-
     maplist(evaluate_move(State), Moves, EvaluatedMoves).
 
+best_greedy_move(State, Move) :-
+    findall(SomeMove, valid_move(State, SomeMove), Moves),
+    evaluate_moves(State, Moves, EvaluatedMoves),
+    max_key_set(EvaluatedMoves, MaxMoves),
+    random_member(Move, MaxMoves).
+
 best_minimax_move(State, Depth, Move) :-
-    NextDepth is Depth - 1,
     findall(Value-Move, (
         valid_move(State, Move),
         state_player(State, Player),
-        execute_move(State, Move, IntermediateState),
-        switch_player(IntermediateState, NewState),
-        minimax(Player, NewState, NextDepth, min, Value)
+        evaluate_minimax_move(Player, State, Depth, max, Move, Value)
     ), EvaluatedMoves),
     max_key_set(EvaluatedMoves, BestMoves),
     random_member(Move, BestMoves).
