@@ -8,10 +8,10 @@
 :- ensure_loaded(theme).
 
 
-/* General Display Functions */
+/* General Display Predicates */
 
 % display_title
-% Displays the game title
+% Displays the game title.
 display_title :-
     nl,
     logo_color(Color), text_color_rgb(Color), bold,
@@ -25,7 +25,7 @@ display_title :-
     move_cursor(10, 1).
 
 % save_input_position(+State)
-% Saves the cursor position for input to be used later
+% Saves the cursor position for input to be used later.
 save_input_position(State) :-
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),
@@ -33,24 +33,24 @@ save_input_position(State) :-
     save_cursor.
 
 % get_right_coordinate(+State, -Value)
-% Gets the right coordinate for the cursor input based on the board size
+% Gets the right coordinate for the cursor input based on the board size.
 get_right_coordinate(State, Value) :-
     state_board(State, board(_Board, Size)),
     tile_width(Width),
     Value is (Size + 2) * Width + 10.
 
 % get_bottom_coordinate(+State, -Value)
-% Gets the bottom coordinate for the cursor input based on the board size
+% Gets the bottom coordinate for the cursor input based on the board size.
 get_bottom_coordinate(State, Value) :-
     state_board(State, board(_Board, Size)),
     tile_height(Height),
     Value is (Size + 2) * Height + 12.
 
 
-/* Menu Display Functions */
+/* Menu Display Predicates */
 
 % display_menu(-GameConfig)
-% Displays the game menu, allowing the user to select the game mode and the players' names
+% Displays the game menu, allowing the user to select the game mode and the players' names.
 display_menu(game_config(GameMode, Player1, Player2)) :- 
     background(BackgroundColor), background_color_rgb(BackgroundColor),
     menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
@@ -59,7 +59,7 @@ display_menu(game_config(GameMode, Player1, Player2)) :-
     display_options(GameMode, Player1, Player2), !.
 
 % get_gamemode(-GameMode)
-% Displays the game mode menu and reads the selected game mode
+% Displays the game mode menu and reads the selected game mode.
 get_gamemode(GameMode):-
     write('    Please select the game mode:'), nl,
     reset_bold, 
@@ -73,7 +73,7 @@ get_gamemode(GameMode):-
     get_option(1, 4, 'Game mode', GameMode), nl.
 
 % display_options(+GameMode, -Player1, -Player2)
-% Displays the player options menu based on the selected game mode and reads the selected options
+% Displays the player options menu based on the selected game mode and reads the selected options.
 display_options(1, player_info(Name1, 0), player_info(Name2, 0)) :-
     get_name('Player 1', Name1),
     get_name('Player 2', Name2).
@@ -92,7 +92,7 @@ display_options(4, player_info(Name1, Difficulty1), player_info(Name2, Difficult
     get_difficulty(Difficulty2).
 
 % get_name(+Context, -Player)
-% Prompts the user for a player name and reads the input
+% Prompts the user for a player name and reads the input.
 get_name(Context, Player):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('    Name for ~a: ', [Context]),
@@ -100,7 +100,7 @@ get_name(Context, Player):-
     read_string(Player).
 
 % get_difficulty(-Difficulty)
-% Displays the difficulty level menu and reads the selected difficulty level
+% Displays the difficulty level menu and reads the selected difficulty level.
 get_difficulty(Difficulty):-
     menu_header_color(HeaderColor), text_color_rgb(HeaderColor), bold,
     write('    Please select the difficulty level:'), nl,
@@ -114,8 +114,8 @@ get_difficulty(Difficulty):-
     get_option(1, 3, 'Difficulty level', Difficulty), nl.
 
 % get_option(+Min, +Max, +Context, -Value)
-% Prompts the user for an option between Min and Max and reads the input
-% Similar to get_game_option/4, but used for the game menu
+% Prompts the user for an option between Min and Max and reads the input.
+% Similar to get_game_option/4, but used for the game menu.
 get_option(Min, Max, Context, Value):-
     prompt_color(PromptColor), text_color_rgb(PromptColor),
     format('~a between ~d and ~d: ', [Context, Min, Max]),
@@ -136,10 +136,10 @@ get_option(Min, Max, Context, Value):-
     get_option(Min, Max, Context, Value).
 
 
-/* Game Display Functions */
+/* Game Display Predicates */
 
 % overlay_game(+State)
-% Displays the game screen overlay, assumes screen is already cleared and with background set
+% Displays the game screen overlay, assumes screen is already cleared and with background set.
 overlay_game(State) :-
     home, background(BG), background_color_rgb(BG),
     hide_cursor,
@@ -152,10 +152,10 @@ overlay_game(State) :-
     display_value(State, Value).
 
 
-/* Board Display Functions */
+/* Board Display Predicates */
 
 % display_board(+Board)
-% Displays the game board
+% Displays the game board.
 display_board(board(Board, Size)) :- 
     move_cursor(10,4),
     display_border_horizontal(Size),
@@ -165,7 +165,7 @@ display_board(board(Board, Size)) :-
     nl.
 
 % display_border_horizontal(+Size)
-% Displays the horizontal border of the board
+% Displays the horizontal border of the board.
 display_border_horizontal(Size) :- 
     border_background(BackgroundColor), background_color_rgb(BackgroundColor),
     border_text(TextColor), text_color_rgb(TextColor), bold,
@@ -179,7 +179,7 @@ display_border_horizontal(Size) :-
     move_cursor_left(NewSize * Width).
 
 % display_border_horizontal_aux(+Width, +Col)
-% Auxiliar function to display the horizontal border of the board
+% Auxiliary predicate to display the horizontal border of the board.
 display_border_horizontal_aux(Width, Width) :- !.
 display_border_horizontal_aux(Width, Col) :- 
     put_cell,
@@ -190,7 +190,7 @@ display_border_horizontal_aux(Width, Col) :-
     display_border_horizontal_aux(Width, Col1).
 
 % display_board_aux(+Board, +Rows, +Cols)
-% Auxiliar function to display the game board
+% Auxiliary predicate to display the game board.
 display_board_aux([], _Rows, _Cols).
 display_board_aux([Line|Rest], Rows, Cols) :- 
     display_border_vertical(Rows),
@@ -205,7 +205,7 @@ display_board_aux([Line|Rest], Rows, Cols) :-
     display_board_aux(Rest, RestRows, Cols).
 
 % display_border_vertical(+Row)
-% Displays the vertical border of a specific row of the board
+% Displays the vertical border of a specific row of the board.
 display_border_vertical(Row) :- 
     border_background(BackgroundColor), background_color_rgb(BackgroundColor),
     border_text(TextColor), text_color_rgb(TextColor), bold,
@@ -213,7 +213,7 @@ display_border_vertical(Row) :-
     draw_piece(Row).
 
 % display_line(+Line, +Row, +Cols)
-% Displays a line of the game board
+% Displays a line of the game board.
 display_line([], _Row, _Cols).
 display_line([Cell|Rest], Row, Cols) :- 
     display_cell(Cell, Row, Cols),
@@ -221,13 +221,13 @@ display_line([Cell|Rest], Row, Cols) :-
     display_line(Rest, Row, RestCols).
 
 % display_cell(+Piece, +Row, +Col)
-% Displays a board cell of the game board
+% Displays a board cell of the game board.
 display_cell(Piece, Row, Col) :-
     draw_cell(Row, Col),
     display_piece(Piece).
 
 % draw_cell(+Row, +Col)
-% Specifies whether a board cell should be white or black and draws it
+% Specifies whether a board cell should be white or black and draws it.
 draw_cell(Row, Col) :-
     Sum is Row + Col,
     Sum mod 2 =:= 0,
@@ -241,8 +241,8 @@ draw_cell(Row, Col) :-
 
 % put_cell
 % Obtains the tile width and height, puts a board cell on the screen 
-% and moves the cursor to the next cell position
-% Also used to draw the border of the board
+% and moves the cursor to the next cell position.
+% Also used to draw the border of the board.
 put_cell :-
     tile_width(Width),
     tile_height(Height),
@@ -251,7 +251,7 @@ put_cell :-
     move_cursor_up(Height).
 
 % put_cell_aux(+Height, +Width)
-% Auxiliar function to put a board cell on the screen
+% Auxiliary predicate to put a board cell on the screen.
 put_cell_aux(0, _) :- !.
 put_cell_aux(Height, Width) :-
     put_cell_line(Height, Width),
@@ -261,7 +261,7 @@ put_cell_aux(Height, Width) :-
     put_cell_aux(Height1, Width).
 
 % put_cell_line(+Height, +Width)
-% Puts a line of a board cell on the screen
+% Puts a line of a board cell on the screen.
 put_cell_line(_Height, 0) :- !.
 put_cell_line(Height, Width) :-
     put_cell_pixel,
@@ -269,11 +269,11 @@ put_cell_line(Height, Width) :-
     put_cell_line(Height, Width1).
 
 % put_cell_pixel
-% Puts a pixel of a board cell on the screen
+% Puts a pixel of a board cell on the screen.
 put_cell_pixel :- write(' ').
 
 % display_piece(+Piece)
-% Sets the piece color and symbol and displays a piece on the screen
+% Sets the piece color and symbol and displays a piece on the screen.
 display_piece(empty) :- draw_piece(' ').
 display_piece(white_piece) :- 
     piece_white(Color), text_color_rgb(Color), bold, 
@@ -289,8 +289,8 @@ display_piece(black_king) :-
     black_king_symbol(Symbol), draw_wide_piece(Symbol).
 
 % draw_piece(+Symbol)
-% Draws a piece on the screen over the center of a board cell
-% Used for the pawn piece, empty cell and the border of the board
+% Draws a piece on the screen over the center of a board cell.
+% Used for the pawn piece, empty cell and the border of the board.
 draw_piece(Symbol) :-
     tile_height(Height),
     tile_width(Width),
@@ -303,8 +303,8 @@ draw_piece(Symbol) :-
     move_cursor_up(CenterY).
 
 % draw_wide_piece(+WideSymbol)
-% Draws a wide piece on the screen over the center of a board cell
-% Used for the king piece
+% Draws a wide piece on the screen over the center of a board cell.
+% Used for the king piece.
 draw_wide_piece(WideSymbol) :-
     tile_height(Height),
     tile_width(Width),
@@ -317,10 +317,10 @@ draw_wide_piece(WideSymbol) :-
     move_cursor_up(CenterY).
 
 
-/* Turn Display Functions */
+/* Turn Display Predicates */
 
 % display_player(+State)
-% Displays the player to play
+% Displays the player to play.
 display_player(State) :- 
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
@@ -331,7 +331,7 @@ display_player(State) :-
     restore_cursor.
 
 % display_player_aux(+Name, +Player)
-% Auxiliar function to display the player to play
+% Auxiliary predicate to display the player to play.
 display_player_aux(Name, white) :- 
     piece_white(Color), text_color_rgb(Color), bold,
     clear_line, write(Name), write(' to play as white!').
@@ -340,7 +340,7 @@ display_player_aux(Name, black) :-
     clear_line, write(Name), write(' to play as black!').
 
 % display_winner(+State, +Winner)
-% Displays the winner of the game
+% Displays the winner of the game.
 display_winner(State, Winner) :-
     get_right_coordinate(State, Right),
     move_cursor(11, Right),
@@ -350,7 +350,7 @@ display_winner(State, Winner) :-
     restore_cursor.
 
 % display_winner_aux(+Name, +Winner)
-% Auxiliar function to display the winner of the game
+% Auxiliary predicate to display the winner of the game.
 display_winner_aux(Name, white) :- 
     piece_white(Color), text_color_rgb(Color), bold,
     clear_line, write(Name), write(' wins as white!').
@@ -359,14 +359,14 @@ display_winner_aux(Name, black) :-
     clear_line, write(Name), write(' wins as black!').
 
 
-/* User Move Display Functions */
+/* User Move Display Predicates */
 
 % get_move(+State, -Move)
-% Reads a move from the input
-% Starts by getting the position of the piece to move
-% Then gets the valid moves for that piece and displays them
-% Finally, reads the selected move from the input
-% If no piece can move from the selected position, displays an error message and retries
+% Reads a move from the input.
+% The predicate starts by getting the position of the piece to move.
+% Then gets the valid moves for that piece and displays them.
+% Finally, it reads the selected move from the input.
+% If no piece can move from the selected position, displays an error message and retries.
 get_move(State, Move) :-
     restore_cursor,
     state_board(State, Board),
@@ -393,8 +393,8 @@ get_move(State, Move) :-
     get_move(State, Move).
 
 % get_position(-Position, +Board)
-% Prompts the user for a position and reads the input
-% Checks if the position is valid
+% Prompts the user for a position and reads the input.
+% Checks if the position is valid.
 get_position(Position, Board):-
     move_cursor_up(2), clear_line,
     prompt_color(PromptColor), text_color_rgb(PromptColor),
@@ -419,7 +419,7 @@ get_position(Position, Board):-
     get_position(Position, Board).
 
 % display_valid_moves(+Moves)
-% Displays the valid moves for a piece
+% Displays the valid moves for a piece.
 display_valid_moves(Moves) :-
     length(Moves, Length),
     Shift is Length + 5,
@@ -430,7 +430,7 @@ display_valid_moves(Moves) :-
     display_valid_moves_aux(Moves, Length).
 
 % display_valid_moves_aux(+Moves, +Length)
-% Auxiliar function to display the valid moves for a piece
+% Auxiliary predicate to display the valid moves for a piece.
 display_valid_moves_aux(Moves, Length) :-
     nth1(Index, Moves, Move),
     restore_cursor,
@@ -443,7 +443,7 @@ display_valid_moves_aux(Moves, Length) :-
 display_valid_moves_aux(_, _).
 
 % display_valid_move(+Move)
-% Displays a valid move for a piece, with the corresponding color
+% Displays a valid move for a piece, with the corresponding color.
 display_valid_move(step(_Position, vertical)) :- 
     vertical_color(Color), text_color_rgb(Color),
     write('Vertical Step').
@@ -458,8 +458,8 @@ display_valid_move(transform(_Position)) :-
     write('Transform').
     
 % get_game_option(+Min, +Max, +Context, -Value)
-% Prompts the user for an option between Min and Max and reads the input
-% Similar to get_option/4, but used for in-game options
+% Prompts the user for an option between Min and Max and reads the input.
+% Similar to get_option/4, but used for in-game options.
 get_game_option(Min, Max, Context, Value):-
     move_cursor_up(2), clear_line,
     prompt_color(PromptColor), text_color_rgb(PromptColor),
@@ -483,7 +483,7 @@ get_game_option(Min, Max, Context, Value):-
     get_game_option(Min, Max, Context, Value).
 
 % clear_valid_moves(+Length, +Cur)
-% Clears the valid move menu displayed on the screen
+% Clears the valid move menu displayed on the screen.
 clear_valid_moves(Length, Length).
 clear_valid_moves(Length, Cur) :-
     clear_line,
@@ -492,12 +492,12 @@ clear_valid_moves(Length, Cur) :-
     clear_valid_moves(Length, Cur1).
 
 
-/* Move History Display Functions */
+/* Move History Display Predicates */
 
 % display_history_move(+State, +Move)
-% Displays a move on the history section of the screen
+% Displays a move on the history section of the screen.
 display_history_move(State, Move) :-
-    state_move(State, MoveCounter),
+    state_move_counter(State, MoveCounter),
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),
     VerticalBound is Bottom - 13 - 12,
@@ -512,7 +512,7 @@ display_history_move(State, Move) :-
     restore_cursor.
 
 % draw_history_move(+Color, +Move, +MoveCounter)
-% Draws current move on the history section of the screen
+% Draws current move on the history section of the screen.
 draw_history_move(white, Move, MoveCounter) :-
     notation_color(Color), text_color_rgb(Color), bold,
     format('~|~d.~t~3+ ', [MoveCounter]),
@@ -522,7 +522,7 @@ draw_history_move(black, Move, _MoveCounter) :-
     put_history_move_code(Move).
 
 % put_history_move_code(+Move)
-% Puts a move on the screen, with the corresponding color
+% Puts a move on the screen, with the corresponding color.
 put_history_move_code(step(Col-Row, vertical)) :- 
     vertical_color(Color), text_color_rgb(Color), reset_bold,
     Value is 64 + Col, char_code(AlphaCol, Value),
@@ -541,10 +541,10 @@ put_history_move_code(transform(Col-Row)) :-
     write(AlphaCol), write(Row), write('x').
 
 
-/* Evaluation Display Functions */
+/* Evaluation Display Predicates */
 
 % display_value(+State, +Value)
-% Displays the board evaluation value
+% Displays the board evaluation value.
 display_value(State, Value) :- 
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),

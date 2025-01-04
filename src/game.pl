@@ -7,9 +7,9 @@
 :- ensure_loaded(evaluate).
 :- ensure_loaded(logic).
 
-% The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
-% which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
-% by the artificial player(s), among other possible parameters, and start the game cycle.
+% play
+% It launches the main game menu, prompting the user to choose the gam mode, player names and
+% difficulty levels (for computer players), and then starts the game loop.
 play :-
     home, background(BG), background_color_rgb(BG), clear_screen,
     display_title,
@@ -20,76 +20,67 @@ play :-
     overlay_game(State),
     game_loop(State), !.
 
-% game_loop(+State)
-game_loop(State) :-
-    game_over(State, Winner), !,
-    display_winner(State, Winner), 
+% game_loop(+GameState)
+% This predicate is responsible for executing the game loop, consisting of
+% choosing/asking the next move to execute, executing it, displaying the updated
+% game state, and verifying if the game is over, continuing the cycle otherwise.
+game_loop(GameState) :-
+    game_over(GameState, Winner), !,
+    display_winner(GameState, Winner), 
     reset, show_cursor.
 
-game_loop(State) :-
-    state_config(State, GameConfig),
-    state_player(State, Player),
+game_loop(GameState) :-
+    state_config(GameState, GameConfig),
+    state_player(GameState, Player),
     config_difficulty(GameConfig, Player, Difficulty),
-    choose_move(State, Difficulty, Move),
-    move(State, Move, IntState),
-    overlay_game(IntState),
-    display_history_move(State, Move),
+    choose_move(GameState, Difficulty, Move),
+    move(GameState, Move, IntermediateGameState),
+    overlay_game(IntermediateGameState),
+    display_history_move(GameState, Move),
     sleep(1),
-    game_loop(IntState).
+    game_loop(IntermediateGameState).
 
 % initial_state(+GameConfig, -GameState)
-% This predicate receives a desired game configuration and
-% returns the corresponding initial game state. Game configuration includes the type of each player
-% and other parameters such as board size, use of optional rules, player names, or other information
-% to provide more flexibility to the game. The game state describes a snapshot of the current game
-% state, including board configuration (typically using list of lists with different atoms for the different
-% pieces), identifies the current player (the one playing next), and possibly captured pieces and/or
-% pieces yet to be played, or any other information that may be required, depending on the game.
+% Generates the initial state of the game, and associates it with the given game
+% configuration.
 initial_state(GameConfig, state(Board, white, none, 0, GameConfig)) :- new_board(Board).
 
-
 % display_game(+GameState)
-% This predicate receives the current game state (including the player
-% who will make the next move) and prints the game state to the terminal. Appealing and intuitive
-% visualizations will be valued. Flexible game state representations and visualization predicates will
-% also be valued, for instance those that work with any board size. For uniformization purposes,
-% coordinates should start at (1,1) at the lower left corner
+% Displays the game state to the terminal.
 display_game(State) :-
     home, background(BG), background_color_rgb(BG), clear_screen,
     overlay_game(State),
     reset, show_cursor.
 
 % move(+GameState, +Move, -NewGameState)
-% This predicate is responsible for move validation and
-% execution, receiving the current game state and the move to be executed, and (if the move is valid)
-% returns the new game state after the move is executed.
+% Verifies if the given move is valid, and if so, executes it, returning the
+% resulting game state.
 move(GameState, Move, NewGameState) :-
+    valid_move(GameState, Move),
     execute_move(GameState, Move, IntermediateGameState),
     switch_player(IntermediateGameState, IntermediateGameState2),
-    increase_state_move(IntermediateGameState2, NewGameState).
+    increase_state_move_counter(IntermediateGameState2, NewGameState).
 
 % valid_moves(+GameState, -ListOfMoves)
-% This predicate receives the current game state, and
-% returns a list of all possible valid moves.
+% Returns a list of all valid moves for the current player in the given game state.
 valid_moves(GameState, ListOfMoves) :- findall(Move, valid_move(GameState, Move), ListOfMoves).
 
 % game_over(+GameState, -Winner)
-% This predicate receives the current game state, and verifies
-% whether the game is over, in which case it also identifies the winner (or draw). Note that this
-% predicate should not print anything to the terminal.
+% Verifies if the game is over, returning the winner in such case.
 game_over(GameState, Winner) :- final_state(GameState, Winner).
 
 % value(+GameState, +Player, -Value)
-% This predicate receives the current game state and returns a
-% value measuring how good/bad the current game state is to the given Player.
+% Returns a value for the given game state, measuring how good or bad the
+% current game state is  for the given player.
 value(GameState, Player, Value) :- evaluate_state(Player, GameState, Value).
 
 % choose_move(+GameState, +Level, -Move)
-% This predicate receives the current game state and
-% returns the move chosen by the computer player. Level 1 should return a random valid move. Level
-% 2 should return the best play at the time (using a greedy algorithm), considering the evaluation of
-% the game state as determined by the value/3 predicate. For human players, it should interact with
-% the user to read the move.
+% Chooses a move by a computer player, or reads the move from a human player.
+% To read the move from a human player, the level 0 should be specified. All
+% other levels (1-3) are used for computer players. Level 1 corresponds to
+% choosing a random valid move, level 2 chooses the move that gives the best
+% immediate position (greedy), and level 3 chooses the best move according to
+% the minimax algorithm.
 choose_move(GameState, 0, Move) :-  % User chooses move
     get_move(GameState, Move).
 choose_move(GameState, 1, Move) :-  % Choose random move
