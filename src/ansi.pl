@@ -5,7 +5,7 @@
  * for text formatting and cursor control. The escape sequences are
  * used to control the output of text in a terminal or console window.
  *
- * Author: Rodrigo Coelho (racoelhosilva)
+ * Authors: Bruno Oliveira (Process-ing), Rodrigo Coelho (racoelhosilva)
  * Date: 03-01-2025
  */
 
