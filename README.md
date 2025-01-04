@@ -43,10 +43,10 @@ The project was made to run using SICStus Prolog 4.9. The process is identical f
 
 Replica is a two-player board game played on an 8x8 checkered board. Each player has 12 flippable checkers that start placed in opposite corners of the board as a 2x2 square with an extra 2x2 square on each side. The pieces in the corners start the game flipped over (indicating a king).
 
-The white player is the first to move and players alternate turns until one of them wins. On each turn, one player can perform one of the following actions:
- - **Step**: move a piece forward one square (horizontally, vertically or diagonally) into a *free square*.
- - **Jump**: move a piece forward in a straight line (horizontally, vertically or diagonally) over friendly pieces until it reaches the first *free square*.
- - **Transform**: flip a friendly non-king piece in line-of-sight (horizontally, vertically or diagonally) of a friendly king, creating another friendly king. Line-of-sight is blocked by enemy pieces.
+The white player is the first to move and players alternate turns until one of them wins. On each turn, one player can perform one of the following actions:  
+ - **Step**: move a piece forward one square (horizontally, vertically or diagonally) into a *free square*.  
+ - **Jump**: move a piece forward in a straight line (horizontally, vertically or diagonally) over friendly pieces until it reaches the first *free square*.  
+ - **Transform**: flip a friendly non-king piece in line-of-sight (horizontally, vertically or diagonally) of a friendly king, creating another friendly king. Line-of-sight is blocked by enemy pieces.  
 
 For steps and jumps, a *free square* is considered one that is not occupied by a friendly piece. If there is an enemy piece in the destination square, it is captured by replacement.
 
@@ -88,11 +88,13 @@ The board is represented using the `board` functor, which contains the board til
 
 The game state also contains the following attributes:
 
-- current player, which can be either `white` or `black`, representing that the next player to perform a move is the player that controls the white or the black pieces, respectively.
-- the color of the previously eaten king, which can be `white`, `black` or `none` (when no king has been eaten in the game history). We need to store this information because of the second winning condition of the game, which states that a player wins if it captures an enemy king.
-- move counter, which indicates the number of moves that we're executed in the game. It is used to enumerate the moves in the move history.
-- game configuration, identical to the configuration passed in the `initial_state/2` predicate.
- 
+- **Current Player**: can be either `white` or `black`, representing that the next player to perform a move is the player that controls the white or the black pieces, respectively.
+- **Color of the Previously Eaten King**: can be `white`, `black` or `none` (when no king has been eaten in the game history). This information is stored because of the second winning condition of the game, which states that a player wins if it captures an enemy king.
+- **Move Counter**: indicates the number of moves that were executed in the game. It is used to enumerate the moves in the move history.
+- **Game Configuration**: identical to the configuration passed in the `initial_state/2` predicate.
+
+The initial game state is generated with `initial_state/2` and contains the initial board configuration, with each set of 12 pieces in opposite corners and the kings at the last corner tiles, the current player set to `white`, the eaten king set to `none` and the move counter set to `0`. As the game develops, each piece get further in the board, closer to the enemy corner, and each player loses more and more pieces. Since the actions of this game are not reversible, it does not suffer from loops, guaranteeing its end. A player wins when one of their kings gets into the enemy corner or an enemy king is captured, and these conditions can be verified with `game_over/2`. Examples of initial, intermediate and final game states are presented in Fig. 1.
+
 <figure align="center">
   <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
     <img src="./imgs/menu.png" alt="Menu Display" style="width: 45%;">
@@ -108,17 +110,27 @@ The game state also contains the following attributes:
 <!--
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.45\linewidth]{./imgs/menu.png}
-    \includegraphics[width=0.45\linewidth]{./imgs/game-start.png}
-    \includegraphics[width=0.45\linewidth]{./imgs/game-mid.png}
-    \includegraphics[width=0.45\linewidth]{./imgs/game-end.png}
+    \includegraphics[width=0.3\linewidth]{./imgs/game-start.png}
+    \includegraphics[width=0.3\linewidth]{./imgs/game-mid.png}
+    \includegraphics[width=0.3\linewidth]{./imgs/game-end.png}
     \caption{Examples of Different States of the Game}
 \end{figure}
 -->
  
 ### Move Representation
 
+In Replica, each piece can perform three types of moves:
 
+- **Step**: A piece moves on square forward
+- **Jump**: A piece jumps forward in a straight line to the first square not occupied by a friendly piece
+- **Transform**: A non-king piece in sight of a friendly king is converted into a king
+
+One consideration we have to mention is that jumps and steps can be seen as the same operation (advance a piece), performed in different contexts (a step occurs when no friendly pieces are in front of the piece, and a jump occurs otherwise). For this reason, we represented both kinds of moves using the same same notation. For both, each move can be characterized by the piece to be moved and the direction of movement, since the piece can only move to one square on each axis. The transform just needs the piece to be transformed to be executed.
+
+With this, we used the following functors to represent the moves:
+
+- Steps and jumps are encoded with the `step(Position, Direction)` functor, where `Position` is the position in the board of the piece to be moved and `Direction` is the direction of movement, which can be either be `vertical`, `horizontal` or `diagonal`.
+- Transforms are represented with `transform(Position)`, where `Position` is the position of the piece to be converted.
 
 ### User Interaction
 
@@ -180,7 +192,19 @@ Additionally, we also allow users to modify the themes of the interface by chang
 
 ### Third Level of AI (Minimax)
 
+Finally, we also took an extra step and developed a third level for the computer players, based on the Minimax algorithm.
+
+The Minimax algorithm is a decision-making algorithm used in two-player games like Replica. It aims to choose a move that minimizes the possible loss for a worst case scenario, by determining the best move that a player can make against the opponent's best moves, predicting all game states in a search tree with a maximum depth.
+
+Our implementation of Minimax uses a depth-first search to analyze the search space and is mainly centered around the predicates `minimax/5` and `evaluate_minimax_move/6`. The former performs, from a certain game state, the evaluation of all possible adjacent states, using `evaluate_minimax_move/6`, and returns the best or worst value for the maximizing player, depending on the maximize state. It also evaluates the state immediately if the state is final or the max search depth is reached. The latter executes the given move, proceeds on the Minimax algorithm by calling `minimax/5` with the new state, and returns the value of the move. Therefore, these predicates are mutually recursive.
+
+In our game, after some fine-tuning, we found that a search depth of 3 was the most adequate, which provided a good balance between the time it takes to perform a move (in general, less than two or three second from our tests) and the quality of the move, allowing for very interesting game scenarios from the computer players.
+
 ## Conclusions
+
+In conclusion, we believe that the project was a success as we were able to successfully meet the requirements specified for this project. By implementing the game logic we were able to learn more not only about project structuring and programming in Prolog, but also about artificial intelligence, game theory and the Minimax algorithm. Moreover, by creating the user interface we were able to learn more about ANSI escape sequences, capturing input in Prolog and interface design.
+
+When it comes to limitations and possible improvements, we have little to point out. Overall we believe that the game is well implemented and has all the features it needs for this project. Nonetheless, some possible improvements could be to try and make the user display more robust, add more themes or a simplified version without ANSI escape sequences. Although we could technically also come up with different game extensions for the game, those would likely require further testing to ensure the final product is fair and balanced.
 
 ## References
 
