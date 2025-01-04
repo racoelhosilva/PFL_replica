@@ -28,8 +28,8 @@ The project was made to run using SICStus Prolog 4.9. The process is identical f
 
 1. **Make sure you are using a proper terminal**: the project uses ANSI escape sequences for a better interface. In order for them to work, please use a terminal that supports these sequences:
    - **Windows**: **PowerShell** or Windows Terminal.
-   - **Linux**: Any **modern terminal emulator** should work.
-     > **Note**: we also assumed that the terminal size is of about 120x40 characters, some window or font resizing may be needed to correctly load the interface.
+   - **Linux**: Any **modern terminal emulator** should work.  
+  > **Note**: we also assumed that the terminal size is of about 120x40 characters, some window or font resizing may be needed to correctly load the interface.
 2. **Load the Project**: navigate to the project directory and load the main file by executing the following command:
    ```bash
    sicstus -l src/game.pl
@@ -58,6 +58,16 @@ The game is over if a player wins by getting any friendly king into the opposite
   <figcaption>Fig. 1 Examples Different States of the Game</figcaption>
 </figure>
 
+<!--
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.3\linewidth]{./imgs/menu.png}
+    \includegraphics[width=0.3\linewidth]{./imgs/game.png}
+    \includegraphics[width=0.3\linewidth]{./imgs/endgame.png}
+    \caption{Examples of Different States of the Game}
+\end{figure}
+-->
+
 ## Considerations for Game Extensions
 
 For this game, we agreed that part of what makes is special is the simplicity of the rules. Some examples of additional rules were provided in the original game description, but we didn't find any of them to be particularly fitting as they tended to involve completely game-changing mechanics. We also considered prompting user input for the board size, but it couldn't be much less than 8x8 (because of the board setup) and larger board sizes would only make the games less interesting as most of the moves would just be passive, so we decided against it.
@@ -68,18 +78,29 @@ Nonetheless, we kept the game implementation flexible to allow for variable boar
 
 ### Game Configuration Representation
 
-Before the actual game starts, some configurations are needed to defined what type of game will be played. These configurations are stored stored in a `game_config` predicate that is filled in the initial menus of the game. It's structure is the following:
+Before the actual game starts, some configurations are needed to defined what type of game will be played. These configurations are stored stored in a `game_config` functor that is filled in the initial menus of the game. It is structured as follows:
 
 ```prolog
 GameConfig = game_config(GameMode, Player1Info, Player2Info).
 PlayerInfo = player_info(PlayerName, PlayerDifficulty).
 ```
 
-where `GameMode` is an integer between 1 and 4 (1 for Human vs Human, 2 for Human vs Computer, 3 for Computer vs Human, 4 for Computer vs Computer), `PlayerName` is a string with the name of the player, and `PlayerDifficulty` is an integer between 0 and 3 (0 for Human, 1 for Easy, 2 for Medium, 3 for Hard).
+where `GameMode` is an integer between 1 and 4 (1 for Human vs Human, 2 for Human vs Computer, 3 for Computer vs Human and 4 for Computer vs Computer), `PlayerName` is a string with the name of the player, and `PlayerDifficulty` is an integer between 0 and 3 (0 for Human, 1 for Easy (random moves), 2 for Medium (greedy moves), 3 for Hard (minimax moves)).
 
 The `GameConfig` is saved onto the initial `GameState` and is used throughout the game to access the name of the players and how the next move should be obtained.
 
 ### Internal Game State Representation
+
+At any step, the game state is stored in a `state` functor, which has the following schema:
+
+```prolog
+GameState = state(Board, CurrentPlayer, KingEaten, MoveCounter, GameConfig)
+Board = board(Tiles, Size)
+```
+
+All the information stored is useful for at least one aspect of the game, whether it is related to the game logic and rules or the visualization.
+
+The board is represented using the `board` functor, which contains the board tiles and size. The latter is used to allow flexible board sizes, even though it is not used since the board has a fixed 8x8 size, according to the game rules. For a board of size N, Tiles is a list matrix of N x N tiles, where each tile can be one of five atoms: `empty`, `white_piece`, `black_piece`, `white_king` and `black_king`.
 
 ### Move Representation
 
@@ -91,8 +112,8 @@ The files associated with the user interaction are the `display.pl` and `input.p
 - The `input.pl` file contains the predicates responsible for reading user input (numbers/options, strings/names and positions/coordinates), without producing any output, in the following ways:
   - **Numbers**: read as the resulting integer from concatenating all the digits in the input string (i.e. skipping all the other characters until it reaches the end of the line)
   - **Strings**: read as the concatenation of all the characters with ASCII codes between 32-127, which includes spaces, numbers, letters and other symbols and punctuation (also skips all other characters until it reaches the end of the line)
-  - **Positions**: referenced as a spreadsheet where the position is a combination of letters and numbers. Letters refer to the column, numbers to the row, and their order doesn't matter. Characters that are larger than a given coordinate range (or are irrelevant) are skipped automatically. When the coordinate only needs one character, the first valid character is considered. Otherwise, all valid symbols for a given coordinate are read and concatenated for spreadsheet-like indexing (i.e. rows: ... 9, 10, 11 ... and columns: ... Z, AA, AB ...). This was done to make the predicates more flexible for larger board sizes.
-    > As an example, all of the following "inputs" represent the same position (Column A, Row 8) in an 8x8 board: `a8`, `az8`, `ai8`, `8a`, `89za`, `8 _ a`, `l8-askd-jsa_das123888812312`.
+  - **Positions**: referenced as a spreadsheet where the position is a combination of letters and numbers. Letters refer to the column, numbers to the row, and their order doesn't matter. Characters that are larger than a given coordinate range (or are irrelevant) are skipped automatically. When the coordinate only needs one character, the first valid character is considered. Otherwise, all valid symbols for a given coordinate are read and concatenated for spreadsheet-like indexing (i.e. rows: ... 9, 10, 11 ... and columns: ... Z, AA, AB ...). This was done to make the predicates more flexible for larger board sizes.  
+  > As an example, all of the following "inputs" represent the same position (Column A, Row 8) in an 8x8 board: `a8`, `az8`, `ai8`, `8a`, `89za`, `8 _ a`, `l8-askd-jsa_das123888812312`.
 
 When it comes to input validation, some small validations are performed by the input predicates (mostly skipping unwanted characters), but on top that, the predicates from the `display.pl` that use them also make some verifications:
 
@@ -109,6 +130,15 @@ Any errors that occur from the previous validations will simply display an error
   <figcaption>Fig. 2 Examples of input validations</figcaption>
 </figure>
 
+<!--
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.45\linewidth]{./imgs/input-option.png}
+    \includegraphics[width=0.45\linewidth]{./imgs/input-position.png}
+    \caption{Examples of input validations}
+\end{figure}
+-->
+
 ### Game Interface
 
 As mentioned before, our game uses ANSI escape sequences to provide a better interface and assumes a terminal size of 120x40 characters to fully display the entire game. For this, we developed a module `ansi.pl` that contains all the necessary predicates to use these sequences. These predicates are capable of changing the text color, background color, text style, cursor position, clearing the screen, and other useful actions.
@@ -122,6 +152,15 @@ Additionally, we also allow users to modify the themes of the interface by chang
   </div>
   <figcaption>Fig. 3 Examples of other themes (Dracula and Gruvbox)</figcaption>
 </figure>
+
+<!--
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.45\linewidth]{./imgs/dracula.png}
+    \includegraphics[width=0.45\linewidth]{./imgs/gruvbox.png}
+    \caption{Examples of other themes (Dracula and Gruvbox)}
+\end{figure}
+-->
 
 ### Third Level of AI (Minimax)
 
