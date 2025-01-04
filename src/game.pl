@@ -95,9 +95,6 @@ choose_move(GameState, 1, Move) :-  % Choose random move
     valid_moves(GameState, Moves),
     random_member(Move, Moves).
 choose_move(GameState, 2, Move) :-  % Choose best (greedy) move
-    valid_moves(GameState, Moves),
-    evaluate_moves(GameState, Moves, EvaluatedMoves),
-    max_key_set(EvaluatedMoves, MaxMoves),
-    random_member(Move, MaxMoves).
-choose_move(GameState, 3, Move) :-  % Choose minimax move
+    best_greedy_move(GameState, Move).
+choose_move(GameState, 3, Move) :-  % Choose best (minimax) move
     best_minimax_move(GameState, 3, Move).

@@ -60,6 +60,12 @@ evaluate_move(State, Move, Value-Move) :-
 evaluate_moves(State, Moves, EvaluatedMoves) :-
     maplist(evaluate_move(State), Moves, EvaluatedMoves).
 
+best_greedy_move(State, Move) :-
+    findall(SomeMove, valid_move(State, SomeMove), Moves),
+    evaluate_moves(State, Moves, EvaluatedMoves),
+    max_key_set(EvaluatedMoves, MaxMoves),
+    random_member(Move, MaxMoves).
+
 best_minimax_move(State, Depth, Move) :-
     NextDepth is Depth - 1,
     findall(Value-Move, (
