@@ -14,6 +14,7 @@ The project was made to run using SICStus Prolog 4.9. The process is identical f
 1. **Make sure you are using a proper terminal**: the project uses ANSI escape sequences for a better interface. In order for them to work, please use a terminal that supports these sequences:
    - **Windows**: **PowerShell** or Windows Terminal.
    - **Linux**: Any **modern terminal emulator** should work.
+   > **Note**: for the interface, we also assumed that the terminal size is of about 120x40 characters, some terminal resize may be needed to correctly load the interface.
 2. **Load the Project**: navigate to the project directory and load the main file by executing the following command:
    ```bash
    sicstus -l src/game.pl
@@ -31,13 +32,27 @@ On each turn, players either step, jump, or transform. All moves (even captures)
 
 The game is over if a player wins by getting any friendly king into the opposite corner, or wins by capturing any enemy king.
 
-\- _description from designer_
+\- _description from designer (abridged)_
 
 ## Considerations for Game Extensions
+
+For this game, we agreed that part of what makes is special is the simplicity of the rules. Some examples of additional rules were provided in the original game description, but we didn't find any of them to be particularly fitting as they tended to involve completely game-changing mechanics. We also considered prompting user input for the board size, but it couldn't be much less than 8x8 (because of the layout) and larger board sizes would only make the games less interesting as most of the moves would just be passive, so we decided against it.  
+
+Nonetheless, we kept the game implementation flexible to allow for variable board sizes and additional rules to be added in the future with easily (although the interface might need some small adjustments). The interface is also extendable to allow the user to choose the theme and other parameters. Finally, we also implemented a third level of AI using Minimax to make the game more challenging (more details below).
 
 ## Game Logic
 
 ### Game Configuration Representation
+
+Before the actual game starts, some configurations are needed to defined what type of game will be played. These configurations are stored stored in a `game_config` predicate that filled in the initial menus of the game. It's structure is the following:
+   
+```prolog
+GameConfig = game_config(GameMode, Player1Info, Player2Info).
+PlayerInfo = player_info(PlayerName, PlayerDifficulty).
+```
+where `GameMode` is an integer between 1 and 4 (1 for Human vs Human, 2 for Human vs Computer, 3 for Computer vs Human, 4 for Computer vs Computer), `PlayerName` is a string with the name of the player, and `PlayerDifficulty` is an integer between 0 and 3 (0 for Human, 1 for Easy, 2 for Medium, 3 for Hard).
+
+The `GameConfig` is saved onto the initial `GameState` and is used throughout the game to access the name of the players and how the next move should be obtained.
 
 ### Internal Game State Representation
 
@@ -62,6 +77,8 @@ When it comes to input validation, some small validations are performed by the i
 Any errors that occur from the previous validations will simply display an error message to the user and prompt for new input from the user.
 
 ### Game Interface
+
+### Third Level of AI (Minimax)
 
 ## Conclusions
 
