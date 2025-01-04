@@ -97,17 +97,19 @@ best_minimax_move(State, Depth, Move) :-
     max_key_set(EvaluatedMoves, BestMoves),
     random_member(Move, BestMoves).
 
-% minimax(+State, +MaxDepth, +Maximize, -Value)
+% minimax(+MaximizingPlayer, +State, +MaxDepth, +Maximize, -Value)
 % Minimax algorithm for evaluating a state.
-minimax(CurrentPlayer, State, _Depth, _Maximize, Value) :-
+% The algorithm uses a depth-first approach to search for the best possible move,
+% calculated according to the maximizing player's perspective.
+minimax(MaximizingPlayer, State, _Depth, _Maximize, Value) :-
     final_state(State, _Winner), !,
-    evaluate_state(CurrentPlayer, State, Value).
-minimax(CurrentPlayer, State, 0, _Maximize, Value) :- 
-    evaluate_state(CurrentPlayer, State, Value).
-minimax(CurrentPlayer, State, Depth, Maximize, Value) :-
+    evaluate_state(MaximizingPlayer, State, Value).
+minimax(MaximizingPlayer, State, 0, _Maximize, Value) :- 
+    evaluate_state(MaximizingPlayer, State, Value).
+minimax(MaximizingPlayer, State, Depth, Maximize, Value) :-
     Depth > 0,
     bagof(Move, valid_move(State, Move), Moves),
-    maplist(evaluate_minimax_move(CurrentPlayer, State, Depth, Maximize), Moves, Values),
+    maplist(evaluate_minimax_move(MaximizingPlayer, State, Depth, Maximize), Moves, Values),
     compare_minimax_values(Maximize, Values, Value).
 
 % switch_maximize(?State, ?NewState)
@@ -115,14 +117,14 @@ minimax(CurrentPlayer, State, Depth, Maximize, Value) :-
 switch_maximize(max, min).
 switch_maximize(min, max).
 
-% evaluate_minimax_move(+CurrentPlayer, +State, +MaxDepth, +Maximize, +Move, -Value)
+% evaluate_minimax_move(+MaximizingPlayer, +State, +MaxDepth, +Maximize, +Move, -Value)
 % Evaluates a move using the minimax algorithm.
-evaluate_minimax_move(CurrentPlayer, State, MaxDepth, Maximize, Move, Value) :-
+evaluate_minimax_move(MaximizingPlayer, State, MaxDepth, Maximize, Move, Value) :-
     execute_move(State, Move, IntermediateState),
     switch_player(IntermediateState, NewState),
     NextMaxDepth is MaxDepth - 1,
     switch_maximize(Maximize, NewMaximize),
-    minimax(CurrentPlayer, NewState, NextMaxDepth, NewMaximize, Value), !.
+    minimax(MaximizingPlayer, NewState, NextMaxDepth, NewMaximize, Value), !.
 
 % compare_minimax_values(+Maximize, +Values, -Value)
 % Compares the values of the minimax algorithm to determine the best move,
