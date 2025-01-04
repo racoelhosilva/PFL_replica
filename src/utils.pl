@@ -25,6 +25,9 @@ compare_keys(Key1-_, Key2-_) :- Key1 =< Key2.
 
 % max_key_set(+EntryList, -MaxKeyValues)
 % Returns all the values of the entry list with the maximum key.
+% To find such values, the predicate groups all the values that match each key,
+% using bagof/3, and then finds the maximum key set using max_member/3,
+% comparing the keys with compare_keys/2.
 max_key_set(EntryList, MaxKeyValues) :-
     findall(Key-Values, (
         bagof(Value, member(Key-Value, EntryList), Values)

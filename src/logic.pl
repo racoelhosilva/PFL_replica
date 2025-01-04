@@ -91,6 +91,9 @@ execute_move(State, transform(Pos), NewState) :-
 % Respecting the game rules, the new position is the first position in the
 % direction of movement not occupied by a friendly piece. If no such position
 % exists, the predicate fails.
+% To determine such position, the predicate tries to advance the current
+% position, one step at a time, until the board bounds are reached or a position
+% not occupied by a piece of the same color is found, using tail recursion.
 new_position(_Color, _Direction, Position, Board, _NewPosition) :- \+ in_bounds(Board, Position), !, fail.
 new_position(Color, _Direction, Position, Board, Position) :-
     board_piece_color(Board, Position, OtherColor),
@@ -141,6 +144,9 @@ seen_by_king(Color, Board, Position) :- seen_by_king(Color, _Direction, Board, P
 % seen_by_king(?Color, ?Direction, +Board, +Position)
 % Auxiliary predicate for seen_by_king/3, which checks if a piece is seen by
 % the king of a certain color in a certain direction.
+% The strategy used on this predicate is very similar to the one used in new_position/5,
+% going through each position in the respective direction backwards, until the board bounds
+% are reached or a piece that blocks the sight of the king is found, using tail recursion.
 seen_by_king(_Color, _Direction, Board, Position) :- \+ in_bounds(Board, Position), !, fail.
 
 seen_by_king(Color, _Direction, Board, Position) :- 
