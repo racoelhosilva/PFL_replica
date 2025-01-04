@@ -14,6 +14,28 @@ new_board(board([
     [empty, empty, empty, empty, black_piece, black_piece, black_piece, black_king]
 ], 8)).  % Mirrored vertically so that the lower left corner matches the coordinates (1, 1)
 
+intermediate_board(board([
+    [white_king,empty,white_piece,white_piece,empty,empty,empty,empty],
+    [empty,empty,white_piece,white_piece,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,white_piece,empty,empty,empty,black_piece,black_piece,empty],
+    [empty,white_piece,empty,white_piece,white_piece,empty,black_piece,empty],
+    [empty,white_piece,empty,empty,empty,empty,black_piece,empty],
+    [empty,empty,black_piece,black_piece,black_piece,black_piece,empty,empty],
+    [empty,empty,empty,empty,empty,black_piece,empty,black_king]
+],8)).
+
+final_board(board([
+    [black_piece,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,empty,empty,empty],
+    [empty,empty,black_piece,empty,empty,empty,empty,empty],
+    [empty,empty,empty,empty,empty,white_king,empty,empty],
+    [empty,white_piece,empty,empty,black_piece,empty,empty,empty],
+    [empty,empty,empty,black_piece,empty,empty,white_piece,empty],
+    [empty,empty,empty,empty,empty,empty,black_king,empty],
+    [empty,empty,empty,empty,empty,empty,white_piece,empty]
+],8)).
+
 % piece_color(?Piece, ?Color)
 piece_color(white_piece, white).
 piece_color(white_king, white).

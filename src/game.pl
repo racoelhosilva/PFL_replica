@@ -24,7 +24,7 @@ play :-
 game_loop(State) :-
     game_over(State, Winner), !,
     display_winner(State, Winner), 
-    reset, show_cursor.
+        reset, show_cursor.
 
 game_loop(State) :-
     state_config(State, GameConfig),
@@ -47,6 +47,14 @@ game_loop(State) :-
 % pieces yet to be played, or any other information that may be required, depending on the game.
 initial_state(GameConfig, state(Board, white, none, 0, GameConfig)) :- new_board(Board).
 
+% intermediate_state(+GameConfig, -GameState)
+intermediate_state(GameConfig, state(Board, black, none, 1, GameConfig)) :- intermediate_board(Board).
+
+% final_state_capture(+GameConfig, -GameState)
+final_state_capture(GameConfig, state(Board, white, none, 0, GameConfig)) :- final_board(Board).
+
+% final_state_corner(+GameConfig, -GameState)
+final_state_corner(GameConfig, state(Board, black, none, 1, GameConfig)) :- final_board(Board).
 
 % display_game(+GameState)
 % This predicate receives the current game state (including the player
