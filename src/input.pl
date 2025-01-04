@@ -7,7 +7,7 @@ read_number(Number):-
     read_number_aux(Number, 0).
 
 % read_number_aux(-Number, +Accumulator)
-% Auxiliar predicate to read a number from input.
+% Auxiliary predicate to read a number from input.
 % Stops at line feed and skips unwanted characters.
 read_number_aux(Number, Number) :-
     peek_code(10), !, skip_line.
@@ -27,7 +27,7 @@ read_string(String):-
     read_string_aux(String, []).
 
 % read_string_aux(-String, +Accumulator)
-% Auxiliar predicate to read a string from input.
+% Auxiliary predicate to read a string from input.
 % Stops at line feed and skips unwanted characters.
 read_string_aux(String, Accumulator) :-
     peek_code(10), !, skip_line,
@@ -53,7 +53,7 @@ read_position(Position, Size):-
     read_position_aux(Position, 0, 0, Size).
 
 % read_position_aux(-Position, +Col, +Row, +Size)
-% Auxiliar predicate to read a position from input.
+% Auxiliary predicate to read a position from input.
 % Stops at line feed and skips unwanted characters.
 read_position_aux(Col-Row, Col, Row, _Size) :-
     peek_code(10), !, skip_line. 

@@ -1,7 +1,7 @@
 :- use_module(library(lists)).
 
 % matrix_at(+Matrix, +Position, -Value)
-% Gets the value of a matrix at a given position.
+% Returns the value of a matrix at a given position.
 matrix_at(Matrix, Col-Row, Value) :-
     nth1(Row, Matrix, Line),
     nth1(Col, Line, Value).

@@ -179,7 +179,7 @@ display_border_horizontal(Size) :-
     move_cursor_left(NewSize * Width).
 
 % display_border_horizontal_aux(+Width, +Col)
-% Auxiliar predicate to display the horizontal border of the board.
+% Auxiliary predicate to display the horizontal border of the board.
 display_border_horizontal_aux(Width, Width) :- !.
 display_border_horizontal_aux(Width, Col) :- 
     put_cell,
@@ -190,7 +190,7 @@ display_border_horizontal_aux(Width, Col) :-
     display_border_horizontal_aux(Width, Col1).
 
 % display_board_aux(+Board, +Rows, +Cols)
-% Auxiliar predicate to display the game board.
+% Auxiliary predicate to display the game board.
 display_board_aux([], _Rows, _Cols).
 display_board_aux([Line|Rest], Rows, Cols) :- 
     display_border_vertical(Rows),
@@ -251,7 +251,7 @@ put_cell :-
     move_cursor_up(Height).
 
 % put_cell_aux(+Height, +Width)
-% Auxiliar predicate to put a board cell on the screen.
+% Auxiliary predicate to put a board cell on the screen.
 put_cell_aux(0, _) :- !.
 put_cell_aux(Height, Width) :-
     put_cell_line(Height, Width),
@@ -331,7 +331,7 @@ display_player(State) :-
     restore_cursor.
 
 % display_player_aux(+Name, +Player)
-% Auxiliar predicate to display the player to play.
+% Auxiliary predicate to display the player to play.
 display_player_aux(Name, white) :- 
     piece_white(Color), text_color_rgb(Color), bold,
     clear_line, write(Name), write(' to play as white!').
@@ -350,7 +350,7 @@ display_winner(State, Winner) :-
     restore_cursor.
 
 % display_winner_aux(+Name, +Winner)
-% Auxiliar predicate to display the winner of the game.
+% Auxiliary predicate to display the winner of the game.
 display_winner_aux(Name, white) :- 
     piece_white(Color), text_color_rgb(Color), bold,
     clear_line, write(Name), write(' wins as white!').
@@ -363,9 +363,9 @@ display_winner_aux(Name, black) :-
 
 % get_move(+State, -Move)
 % Reads a move from the input.
-% Starts by getting the position of the piece to move.
+% The predicate starts by getting the position of the piece to move.
 % Then gets the valid moves for that piece and displays them.
-% Finally, reads the selected move from the input.
+% Finally, it reads the selected move from the input.
 % If no piece can move from the selected position, displays an error message and retries.
 get_move(State, Move) :-
     restore_cursor,
