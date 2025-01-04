@@ -1,5 +1,5 @@
-:- consult(logic).
-
+:- ensure_loaded(logic).
+:- ensure_loaded(utils).
 
 % evaluate_piece(+Color, +BoardSize, +Piece, +Position, -Value)
 evaluate_piece(_Color, _BoardSize, empty, _Position, 0) :- !.

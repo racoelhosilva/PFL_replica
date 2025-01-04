@@ -1,9 +1,10 @@
+:- use_module(ansi).
 :- use_module(library(random)).
 :- use_module(library(system)).
 
-:- include(display).
-:- include(config).
-:- include(evaluate).
+:- ensure_loaded(display).
+:- ensure_loaded(evaluate).
+:- ensure_loaded(logic).
 
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used

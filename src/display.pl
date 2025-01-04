@@ -1,10 +1,11 @@
 :- use_module(ansi).
 :- use_module(library(lists)).
 
-:- include(input).
-:- include(theme).
-:- include(evaluate).
-:- include(config).
+:- ensure_loaded(config).
+:- ensure_loaded(evaluate).
+:- ensure_loaded(input).
+:- ensure_loaded(logic).
+:- ensure_loaded(theme).
 
 
 /* General Display Functions */

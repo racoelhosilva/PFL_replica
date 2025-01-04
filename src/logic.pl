@@ -1,4 +1,4 @@
-:- include(board).
+:- ensure_loaded(board).
 
 % state_board(+State, -Board)
 state_board(state(Board, _Player, _KingEaten, _MoveCounter, _GameConfig), Board).
