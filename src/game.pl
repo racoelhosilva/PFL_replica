@@ -15,7 +15,7 @@ play :-
     clear_screen,
     initial_state(GameConfig, State),
     save_input_position(State),
-    display_game(State),
+    overlay_game(State),
     game_loop(State), !.
 
 % game_loop(+State)
