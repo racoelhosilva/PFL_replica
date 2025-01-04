@@ -2,10 +2,14 @@
 
 ## Game_Group: Replica_7
 
-| Name                                           | E-mail            | Contribution |
-| ---------------------------------------------- | ----------------- | -----------: |
+<figure align="center">
+
+| Name                                           |      E-mail       | Contribution |
+| :--------------------------------------------- | :---------------: | -----------: |
 | Bruno Ricardo Soares Pereira de Sousa Oliveira | up202208700@up.pt |          50% |
 | Rodrigo Albergaria Coelho e Silva              | up202205188@up.pt |          50% |
+
+</figure>
 
 ### Tasks Developed
 
@@ -25,7 +29,7 @@ The project was made to run using SICStus Prolog 4.9. The process is identical f
 1. **Make sure you are using a proper terminal**: the project uses ANSI escape sequences for a better interface. In order for them to work, please use a terminal that supports these sequences:
    - **Windows**: **PowerShell** or Windows Terminal.
    - **Linux**: Any **modern terminal emulator** should work.
-   > **Note**: we also assumed that the terminal size is of about 120x40 characters, some window or font resizing may be needed to correctly load the interface.
+     > **Note**: we also assumed that the terminal size is of about 120x40 characters, some window or font resizing may be needed to correctly load the interface.
 2. **Load the Project**: navigate to the project directory and load the main file by executing the following command:
    ```bash
    sicstus -l src/game.pl
@@ -45,9 +49,18 @@ The game is over if a player wins by getting any friendly king into the opposite
 
 \- _description from designer (abridged)_
 
+<figure align="center">
+  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <img src="./imgs/menu.png" alt="Initial Menu" style="width: 30%;">
+    <img src="./imgs/game.png" alt="Game Display" style="width: 30%;">
+    <img src="./imgs/endgame.png" alt="End of Game Display" style="width: 30%;">
+  </div>
+  <figcaption>Fig. 1 Examples Different States of the Game</figcaption>
+</figure>
+
 ## Considerations for Game Extensions
 
-For this game, we agreed that part of what makes is special is the simplicity of the rules. Some examples of additional rules were provided in the original game description, but we didn't find any of them to be particularly fitting as they tended to involve completely game-changing mechanics. We also considered prompting user input for the board size, but it couldn't be much less than 8x8 (because of the board setup) and larger board sizes would only make the games less interesting as most of the moves would just be passive, so we decided against it.  
+For this game, we agreed that part of what makes is special is the simplicity of the rules. Some examples of additional rules were provided in the original game description, but we didn't find any of them to be particularly fitting as they tended to involve completely game-changing mechanics. We also considered prompting user input for the board size, but it couldn't be much less than 8x8 (because of the board setup) and larger board sizes would only make the games less interesting as most of the moves would just be passive, so we decided against it.
 
 Nonetheless, we kept the game implementation flexible to allow for variable board sizes and additional rules to be added in the future easily (although the interface might need some small adjustments). The interface is also extendable to allow the user to choose the theme and other parameters. Finally, we also implemented a third level of AI using Minimax to make the game more challenging (more details below).
 
@@ -56,11 +69,12 @@ Nonetheless, we kept the game implementation flexible to allow for variable boar
 ### Game Configuration Representation
 
 Before the actual game starts, some configurations are needed to defined what type of game will be played. These configurations are stored stored in a `game_config` predicate that is filled in the initial menus of the game. It's structure is the following:
-   
+
 ```prolog
 GameConfig = game_config(GameMode, Player1Info, Player2Info).
 PlayerInfo = player_info(PlayerName, PlayerDifficulty).
 ```
+
 where `GameMode` is an integer between 1 and 4 (1 for Human vs Human, 2 for Human vs Computer, 3 for Computer vs Human, 4 for Computer vs Computer), `PlayerName` is a string with the name of the player, and `PlayerDifficulty` is an integer between 0 and 3 (0 for Human, 1 for Easy, 2 for Medium, 3 for Hard).
 
 The `GameConfig` is saved onto the initial `GameState` and is used throughout the game to access the name of the players and how the next move should be obtained.
@@ -87,11 +101,27 @@ When it comes to input validation, some small validations are performed by the i
 
 Any errors that occur from the previous validations will simply display an error message to the user and prompt for new input from the user.
 
+<figure align="center">
+  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <img src="./imgs/input-option.png" alt="Input Validation for Option" style="width: 45%;">
+    <img src="./imgs/input-position.png" alt="Input Validation for Position" style="width: 45%;">
+  </div>
+  <figcaption>Fig. 2 Examples of input validations</figcaption>
+</figure>
+
 ### Game Interface
 
-As mentioned before, our game uses ANSI escape sequences to provide a better interface and assumes a terminal size of 120x40 characters to fully display the entire game. For this, we developed a module `ansi.pl` that contains all the necessary predicates to use these sequences. These predicates are capable of changing the text color, background color, text style, cursor position, clearing the screen, and other useful actions. 
+As mentioned before, our game uses ANSI escape sequences to provide a better interface and assumes a terminal size of 120x40 characters to fully display the entire game. For this, we developed a module `ansi.pl` that contains all the necessary predicates to use these sequences. These predicates are capable of changing the text color, background color, text style, cursor position, clearing the screen, and other useful actions.
 
 Additionally, we also allow users to modify the themes of the interface by changing the `theme.pl` file. This file is the one that contains the configurations for the interface, such as the colors used for the different elements of the display and the symbols used for the pieces. The game comes with a default theme, but we also define some other themes that can be swapped directly with the `theme.pl` file.
+
+<figure align="center">
+  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <img src="./imgs/dracula.png" alt="Dracula Theme" style="width: 45%;">
+    <img src="./imgs/gruvbox.png" alt="Gruvbox Theme" style="width: 45%;">
+  </div>
+  <figcaption>Fig. 3 Examples of other themes (Dracula and Gruvbox)</figcaption>
+</figure>
 
 ### Third Level of AI (Minimax)
 
