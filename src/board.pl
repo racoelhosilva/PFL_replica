@@ -15,6 +15,9 @@ new_board(board([
     [empty, empty, empty, empty, black_piece, black_piece, black_piece, black_king]
 ], 8)).  % Mirrored vertically so that the lower left corner matches the coordinates (1, 1).
 
+% intermediate_board(+Board)
+% Creates a board with in a middle game position.
+% This is used for testing and demonstration purposes.
 intermediate_board(board([
     [white_king,empty,white_piece,white_piece,empty,empty,empty,empty],
     [empty,empty,white_piece,white_piece,empty,empty,empty,empty],
@@ -26,6 +29,10 @@ intermediate_board(board([
     [empty,empty,empty,empty,empty,black_piece,empty,black_king]
 ],8)).
 
+% final_board(+Board)
+% Creates a board with in a final game position.
+% Depending on the next player to move, either side can win based on different conditions.
+% This is used for testing and demonstration purposes.
 final_board(board([
     [black_piece,empty,empty,empty,empty,empty,empty,empty],
     [empty,empty,empty,empty,empty,empty,empty,empty],

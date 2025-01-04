@@ -46,12 +46,20 @@ game_loop(GameState) :-
 initial_state(GameConfig, state(Board, white, none, 0, GameConfig)) :- new_board(Board).
 
 % intermediate_state(+GameConfig, -GameState)
+% Generates an intermediate state of the game, and associates it with the given game configuration.
+% This is used for testing and demonstration purposes.
 intermediate_state(GameConfig, state(Board, black, none, 1, GameConfig)) :- intermediate_board(Board).
 
 % final_state_capture(+GameConfig, -GameState)
+% Generates a near-final state of the game, and associates it with the given game configuration.
+% The game ends when the white player captures the black player's king.
+% This is used for testing and demonstration purposes.
 final_state_capture(GameConfig, state(Board, white, none, 0, GameConfig)) :- final_board(Board).
 
 % final_state_corner(+GameConfig, -GameState)
+% Generates a near-final state of the game, and associates it with the given game configuration.
+% The game ends when the black player's king reaches the corner of the board.
+% This is used for testing and demonstration purposes.
 final_state_corner(GameConfig, state(Board, black, none, 1, GameConfig)) :- final_board(Board).
 
 % display_game(+GameState)
