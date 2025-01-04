@@ -41,32 +41,16 @@ The project was made to run using SICStus Prolog 4.9. The process is identical f
 
 ## Description of the Game
 
-Replica is a two player game played using a chessboard and 12 black and 12 white flippable checkers. Players setup the game by placing the checkers on the board in opposite corners (with a 2x2 square in the corner, flanked by a 2x2 square on each side). The pieces in the very corner start the game flipped over (indicating a king). Players make one move per turn, starting with White.
+Replica is a two-player board game played on an 8x8 checkered board. Each player has 12 flippable checkers that start placed in opposite corners of the board as a 2x2 square with an extra 2x2 square on each side. The pieces in the corners start the game flipped over (indicating a king).
 
-On each turn, players either step, jump, or transform. All moves (even captures) must go "forward" (1 of the 3 directions towards the opponent corner). For steps and for jumps, if there is already a piece on the destination square, it is captured by replacement. For a step, the piece moves forward one square. For a jump, the piece moves in a straight line forward over friendly pieces until it reaches a square not occupied by a friendly piece. For a transform, a friendly non-king piece in line-of-sight of a friendly king gets flipped (this creates another friendly king). Only enemy pieces block line of sight.
+The white player is the first to move and players alternate turns until one of them wins. On each turn, one player can perform one of the following actions:
+ - **Step**: move a piece forward one square (horizontally, vertically or diagonally) into a *free square*.
+ - **Jump**: move a piece forward in a straight line (horizontally, vertically or diagonally) over friendly pieces until it reaches the first *free square*.
+ - **Transform**: flip a friendly non-king piece in line-of-sight (horizontally, vertically or diagonally) of a friendly king, creating another friendly king. Line-of-sight is blocked by enemy pieces.
 
-The game is over if a player wins by getting any friendly king into the opposite corner, or wins by capturing any enemy king.
+For steps and jumps, a *free square* is considered one that is not occupied by a friendly piece. If there is an enemy piece in the destination square, it is captured by replacement.
 
-\- _description from designer (abridged)_
-
-<figure align="center">
-  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-    <img src="./imgs/menu.png" alt="Initial Menu" style="width: 30%;">
-    <img src="./imgs/game.png" alt="Game Display" style="width: 30%;">
-    <img src="./imgs/endgame.png" alt="End of Game Display" style="width: 30%;">
-  </div>
-  <figcaption>Fig. 1 Examples Different States of the Game</figcaption>
-</figure>
-
-<!--
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.3\linewidth]{./imgs/menu.png}
-    \includegraphics[width=0.3\linewidth]{./imgs/game.png}
-    \includegraphics[width=0.3\linewidth]{./imgs/endgame.png}
-    \caption{Examples of Different States of the Game}
-\end{figure}
--->
+A player wins the game by getting a friendly king into the opposite corner of the board or capturing any of the enemy's kings.
 
 ## Considerations for Game Extensions
 
@@ -100,9 +84,41 @@ Board = board(Tiles, Size)
 
 All the information stored is useful for at least one aspect of the game, whether it is related to the game logic and rules or the visualization.
 
-The board is represented using the `board` functor, which contains the board tiles and size. The latter is used to allow flexible board sizes, even though it is not used since the board has a fixed 8x8 size, according to the game rules. For a board of size N, Tiles is a list matrix of N x N tiles, where each tile can be one of five atoms: `empty`, `white_piece`, `black_piece`, `white_king` and `black_king`.
+The board is represented using the `board` functor, which contains the board tiles and size. The latter is used to allow flexible board sizes, even though it is not used since the board has a fixed 8x8 size, according to the game rules. For a board of size N, Tiles is a list matrix of N x N tiles, where each tile can be one of five atoms: `empty` (empty space), `white_piece` (normal white piece), `black_piece` (normal black piece), `white_king` (white king piece) and `black_king` (black king piece).
 
+The game state also contains the following attributes:
+
+- current player, which can be either `white` or `black`, representing that the next player to perform a move is the player that controls the white or the black pieces, respectively.
+- the color of the previously eaten king, which can be `white`, `black` or `none` (when no king has been eaten in the game history). We need to store this information because of the second winning condition of the game, which states that a player wins if it captures an enemy king.
+- move counter, which indicates the number of moves that we're executed in the game. It is used to enumerate the moves in the move history.
+- game configuration, identical to the configuration passed in the `initial_state/2` predicate.
+ 
+<figure align="center">
+  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <img src="./imgs/menu.png" alt="Menu Display" style="width: 45%;">
+    <img src="./imgs/game-start.png" alt="Start of Game Display" style="width: 45%;">
+  </div>
+  <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+    <img src="./imgs/game-mid.png" alt="Middle of Game Display" style="width: 45%;">
+    <img src="./imgs/game-end.png" alt="End of Game Display" style="width: 45%;">
+  </div>
+  <figcaption>Fig. 1 Examples of Different States of the Game</figcaption>
+</figure>
+
+<!--
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.45\linewidth]{./imgs/menu.png}
+    \includegraphics[width=0.45\linewidth]{./imgs/game-start.png}
+    \includegraphics[width=0.45\linewidth]{./imgs/game-mid.png}
+    \includegraphics[width=0.45\linewidth]{./imgs/game-end.png}
+    \caption{Examples of Different States of the Game}
+\end{figure}
+-->
+ 
 ### Move Representation
+
+
 
 ### User Interaction
 
@@ -167,3 +183,5 @@ Additionally, we also allow users to modify the themes of the interface by chang
 ## Conclusions
 
 ## References
+
+1. **BoardGameGeek**. *Replica*. Available at: https://boardgamegeek.com/boardgame/427267/replica (accessed January 4, 2025).
