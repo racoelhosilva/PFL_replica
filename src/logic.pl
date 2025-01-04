@@ -108,6 +108,8 @@ blocks_sight(Color, Piece) :-
     opposite_color(Color, OppositeColor),
     piece_color(Piece, OppositeColor).
 
+seen_by_king(Color, Board, Position) :- seen_by_king(Color, _Direction, Board, Position), !.
+
 % seen_by_king(?Color, ?Direction, +Board, +Position)
 seen_by_king(_Color, _Direction, Board, Position) :- \+ in_bounds(Board, Position), !, fail.
 
@@ -153,7 +155,7 @@ valid_move(State, transform(Position)) :-
     player_can_move_at(Player, Position, Board),
     board_piece(Board, Position, Piece),
     \+ king(Piece),
-    seen_by_king(Player, _Direction, Board, Position).
+    seen_by_king(Player, Board, Position).  % DOuble negation used to prevent unification of _Direction
 
 % valid_piece_moves(+State, +Piece, -Moves)
 valid_piece_moves(State, Piece, Moves) :-
