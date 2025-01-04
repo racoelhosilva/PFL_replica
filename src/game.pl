@@ -66,12 +66,12 @@ move(GameState, Move, NewGameState) :-
 valid_moves(GameState, ListOfMoves) :- findall(Move, valid_move(GameState, Move), ListOfMoves).
 
 % game_over(+GameState, -Winner)
-% Verifies if the game is over, returning the winner in such case.
+% Verifies if the game is over, returning the winner in such case (white or black).
 game_over(GameState, Winner) :- final_state(GameState, Winner).
 
 % value(+GameState, +Player, -Value)
 % Returns a value for the given game state, measuring how good or bad the
-% current game state is  for the given player.
+% current game state is for the given player (white or black).
 value(GameState, Player, Value) :- evaluate_state(Player, GameState, Value).
 
 % choose_move(+GameState, +Level, -Move)
