@@ -1,9 +1,11 @@
+:- use_module(ansi).
 :- use_module(library(random)).
 :- use_module(library(system)).
 
-:- include(display).
-:- include(logic).
-:- include(config).
+:- ensure_loaded(config).
+:- ensure_loaded(display).
+:- ensure_loaded(evaluate).
+:- ensure_loaded(logic).
 
 % The main predicate, play/0, must be in the game.pl file and must give access to the game menu,
 % which allows configuring the game type (H/H, H/PC, PC/H, or PC/PC), difficulty level(s) to be used
@@ -15,7 +17,7 @@ play :-
     clear_screen,
     initial_state(GameConfig, State),
     save_input_position(State),
-    display_game(State),
+    overlay_game(State),
     game_loop(State), !.
 
 % game_loop(+State)
@@ -69,23 +71,13 @@ move(GameState, Move, NewGameState) :-
 % valid_moves(+GameState, -ListOfMoves)
 % This predicate receives the current game state, and
 % returns a list of all possible valid moves.
-valid_moves(GameState, ListOfMoves) :-
-    findall(Move, valid_move(GameState, Move), ListOfMoves).
+valid_moves(GameState, ListOfMoves) :- findall(Move, valid_move(GameState, Move), ListOfMoves).
 
 % game_over(+GameState, -Winner)
 % This predicate receives the current game state, and verifies
 % whether the game is over, in which case it also identifies the winner (or draw). Note that this
 % predicate should not print anything to the terminal.
-game_over(State, Winner) :-
-    king_eaten(State, OppositeColor),
-    opposite_color(OppositeColor, Winner).
-game_over(State, white) :-
-    state_board(State, Board),
-    size(Board, Size),
-    board_piece(Board, Size-Size, white_king).
-game_over(State, black) :-
-    state_board(State, Board),
-    board_piece(Board, 1-1, black_king).
+game_over(GameState, Winner) :- final_state(GameState, Winner).
 
 % value(+GameState, +Player, -Value)
 % This predicate receives the current game state and returns a
@@ -104,8 +96,6 @@ choose_move(GameState, 1, Move) :-  % Choose random move
     valid_moves(GameState, Moves),
     random_member(Move, Moves).
 choose_move(GameState, 2, Move) :-  % Choose best (greedy) move
-    valid_moves(GameState, Moves),
-    evaluate_moves(GameState, Moves, EvaluatedMoves),
-    max_key_set(EvaluatedMoves, MaxMoves),
-    random_member(Move, MaxMoves).
-    
+    best_greedy_move(GameState, Move).
+choose_move(GameState, 3, Move) :-  % Choose best (minimax) move
+    best_minimax_move(GameState, 3, Move).

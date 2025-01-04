@@ -1,5 +1,6 @@
 :- use_module(library(between)).
-:- include(utils).
+
+:- ensure_loaded(utils).
 
 % new_board(+Board)
 new_board(board([

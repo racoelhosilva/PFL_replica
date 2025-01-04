@@ -1,8 +1,11 @@
 :- use_module(ansi).
 :- use_module(library(lists)).
 
-:- include(input).
-:- include(theme).
+:- ensure_loaded(config).
+:- ensure_loaded(evaluate).
+:- ensure_loaded(input).
+:- ensure_loaded(logic).
+:- ensure_loaded(theme).
 
 
 /* General Display Functions */
@@ -105,9 +108,10 @@ get_difficulty(Difficulty):-
     menu_options_color(OptionsColor), text_color_rgb(OptionsColor),
     write('      1. Random'), nl,
     write('      2. Greedy'), nl,
+    write('      3. Minimax'), nl,
     write('    '),
     save_cursor,
-    get_option(1, 2, 'Difficulty level', Difficulty), nl.
+    get_option(1, 3, 'Difficulty level', Difficulty), nl.
 
 % get_option(+Min, +Max, +Context, -Value)
 % Prompts the user for an option between Min and Max and reads the input
@@ -144,7 +148,7 @@ overlay_game(State) :-
     display_board(Board),
     background(BG), background_color_rgb(BG),
     display_player(State),
-    value(State, white, Value),
+    evaluate_state(white, State, Value),
     display_value(State, Value).
 
 
