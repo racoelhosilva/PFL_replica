@@ -2,6 +2,7 @@
 :- use_module(library(random)).
 :- use_module(library(system)).
 
+:- ensure_loaded(config).
 :- ensure_loaded(display).
 :- ensure_loaded(evaluate).
 :- ensure_loaded(logic).
