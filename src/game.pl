@@ -63,9 +63,10 @@ display_game(State) :-
 % execution, receiving the current game state and the move to be executed, and (if the move is valid)
 % returns the new game state after the move is executed.
 move(GameState, Move, NewGameState) :-
+    valid_move(GameState, Move),
     execute_move(GameState, Move, IntermediateGameState),
     switch_player(IntermediateGameState, IntermediateGameState2),
-    increase_state_move(IntermediateGameState2, NewGameState).
+    increase_state_move_counter(IntermediateGameState2, NewGameState).
 
 % valid_moves(+GameState, -ListOfMoves)
 % This predicate receives the current game state, and

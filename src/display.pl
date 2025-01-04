@@ -497,7 +497,7 @@ clear_valid_moves(Length, Cur) :-
 % display_history_move(+State, +Move)
 % Displays a move on the history section of the screen
 display_history_move(State, Move) :-
-    state_move(State, MoveCounter),
+    state_move_counter(State, MoveCounter),
     get_right_coordinate(State, Right),
     get_bottom_coordinate(State, Bottom),
     VerticalBound is Bottom - 13 - 12,
