@@ -24,7 +24,7 @@ play :-
 game_loop(State) :-
     game_over(State, Winner), !,
     display_winner(State, Winner), 
-        reset, show_cursor.
+    reset, show_cursor.
 
 game_loop(State) :-
     state_config(State, GameConfig),
