@@ -2,10 +2,21 @@
 
 ## Game_Group: Replica_7
 
-| Name                                           | E-mail            | Contribution | Tasks Developed                                                     |
-| ---------------------------------------------- | ----------------- | -----------: | ------------------------------------------------------------------- |
-| Bruno Ricardo Soares Pereira de Sousa Oliveira | up202208700@up.pt |          50% | Development and documentation of **board** and **game** logic       |
-| Rodrigo Albergaria Coelho e Silva              | up202205188@up.pt |          50% | Development and documentation of **input** and **interface** system |
+| Name                                           | E-mail            | Contribution |
+| ---------------------------------------------- | ----------------- | -----------: |
+| Bruno Ricardo Soares Pereira de Sousa Oliveira | up202208700@up.pt |          50% |
+| Rodrigo Albergaria Coelho e Silva              | up202205188@up.pt |          50% |
+
+### Tasks Developed
+
+- **Bruno Ricardo Soares Pereira de Sousa Oliveira**
+  - Implementation of the Board and Game Logic
+  - Development of third level of AI (Minimax)
+  - Documentation and Review of the code
+- **Rodrigo Albergaria Coelho e Silva**
+  - Implementation of the User Interaction and Interface
+  - Development of third level of AI (Minimax)
+  - Documentation and Review of the code
 
 ## Installation and Execution
 
@@ -14,7 +25,7 @@ The project was made to run using SICStus Prolog 4.9. The process is identical f
 1. **Make sure you are using a proper terminal**: the project uses ANSI escape sequences for a better interface. In order for them to work, please use a terminal that supports these sequences:
    - **Windows**: **PowerShell** or Windows Terminal.
    - **Linux**: Any **modern terminal emulator** should work.
-   > **Note**: for the interface, we also assumed that the terminal size is of about 120x40 characters, some terminal resize may be needed to correctly load the interface.
+   > **Note**: we also assumed that the terminal size is of about 120x40 characters, some window or font resizing may be needed to correctly load the interface.
 2. **Load the Project**: navigate to the project directory and load the main file by executing the following command:
    ```bash
    sicstus -l src/game.pl
@@ -77,6 +88,10 @@ When it comes to input validation, some small validations are performed by the i
 Any errors that occur from the previous validations will simply display an error message to the user and prompt for new input from the user.
 
 ### Game Interface
+
+As mentioned before, our game uses ANSI escape sequences to provide a better interface and assumes a terminal size of 120x40 characters to fully display the entire game. For this, we developed a module `ansi.pl` that contains all the necessary predicates to use these sequences. These predicates are capable of changing the text color, background color, text style, cursor position, clearing the screen, and other useful functions. 
+
+Additionally, we also allow users to modify the themes of the interface by changing the `theme.pl` file. This file is the one that contains the configurations for the interface, such as the colors used for the different elements of the display and the symbols used for the pieces. The game comes with a default theme, but we also define some other themes that can be swapped directly with the `theme.pl` file.
 
 ### Third Level of AI (Minimax)
 
