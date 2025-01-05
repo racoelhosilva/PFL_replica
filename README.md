@@ -84,7 +84,7 @@ Board = board(Tiles, Size)
 
 All the information stored is useful for at least one aspect of the game, whether it is related to the game logic and rules or the visualization.
 
-The board is represented using the `board` functor, which contains the board tiles and size. The latter is used to allow flexible board sizes, even though it is not used since the board has a fixed 8x8 size, according to the game rules. For a board of size N, Tiles is a list matrix of N x N tiles, where each tile can be one of five atoms: `empty` (empty space), `white_piece` (normal white piece), `black_piece` (normal black piece), `white_king` (white king piece) and `black_king` (black king piece).
+The board is represented using the `board` functor, which contains the board tiles and size. The latter is used to allow flexible board sizes more efficiently, even though the game only allows a fixed 8x8 size board. For a board of size N, Tiles is a list matrix of N x N tiles, where each tile can be one of five atoms: `empty` (empty space), `white_piece` (normal white piece), `black_piece` (normal black piece), `white_king` (white king piece) and `black_king` (black king piece).
 
 The game state also contains the following attributes:
 
@@ -113,7 +113,7 @@ The initial game state is generated with `initial_state/2` and contains the init
     \includegraphics[width=0.3\linewidth]{./imgs/game-start.png}
     \includegraphics[width=0.3\linewidth]{./imgs/game-mid.png}
     \includegraphics[width=0.3\linewidth]{./imgs/game-end.png}
-    \caption{Examples of Different States of the Game}
+    \caption{Examples of Different States of the Game (Initial, Intermediate and Final)}
 \end{figure}
 -->
 
