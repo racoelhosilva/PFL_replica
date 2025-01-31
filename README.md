@@ -212,3 +212,10 @@ When it comes to limitations and possible improvements, we have little to point 
 ## References
 
 1. **BoardGameGeek**. *Replica*. Available at: https://boardgamegeek.com/boardgame/427267/replica (accessed January 4, 2025).
+
+---
+
+> Group: Replica_7   
+> Final Grade: 19.7  
+> Professors: Daniel Castro Silva  
+> Created in December 2024 for PFL (Programação Funcional e em Lógica) [FEUP-L.EIC024]  
